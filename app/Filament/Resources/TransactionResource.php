@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource\RelationManagers;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,6 +14,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+
 
 class TransactionResource extends Resource
 {
@@ -27,27 +31,26 @@ class TransactionResource extends Resource
                     ->label('Nama Transaksi')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('category_id')
+                Forms\Components\Select::make('category_id')
                     ->label('Kategori')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('products_id')
+                    ->relationship('category', 'name')
+                    ->required(),
+                Forms\Components\Select::make('product_id')
                     ->label('Produk')
-                    ->required()
-                    ->numeric(),
+                    ->relationship('product', 'name')
+                    ->required(),
                 Forms\Components\DatePicker::make('date')
                     ->label('Waktu')
                     ->required(),
-                Forms\Components\TextInput::make('product_name')
+                Forms\Components\Select::make('product_name')
                     ->label('Nama Produk')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('amount')
+                    ->relationship('product', 'description')
+                    ->required(),
+                Forms\Components\Select::make('amount')
                     ->label('Jumlah')
+                    ->relationship('product', 'price')
                     ->prefix('Rp.')
-                    ->numeric()
-                    ->required()
-                    ->numeric(),
+                    ->required(),
                 Forms\Components\Textarea::make('description')
                     ->label('Deskripsi')
                     ->required()
@@ -63,23 +66,37 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('products_id')
+                Tables\Columns\ImageColumn::make('category.image')
+                ->label('Kategori'),
+                Tables\Columns\TextColumn::make('category.name')
+                ->description(fn (Transaction $record): string => $record->name)
+                ->label('Transaksi')
+                ->searchable(),
+                Tables\Columns\IconColumn::make('category.is_expense')
+                    ->label('Tipe')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-arrow-up-circle')
+                    ->falseIcon('heroicon-o-arrow-down-circle')
+                    ->trueColor('danger')
+                    ->falseColor('success'),
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Produk')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date')
+                    ->label('Tanggal')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product_name')
+                Tables\Columns\TextColumn::make('product.description')
+                    ->label('Deskripsi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('amount')
+                Tables\Columns\TextColumn::make('product.price')
+                    ->label('Jumlah')
                     ->numeric()
+                    ->money('IDR', locale:'id')
                     ->sortable(),
-                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Bukti Transaksi'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -94,6 +111,7 @@ class TransactionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

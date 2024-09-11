@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
-            $table->foreignId('products_id')->constrained('products')->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->date('date');
             $table->string('product_name');
             $table->integer('amount');

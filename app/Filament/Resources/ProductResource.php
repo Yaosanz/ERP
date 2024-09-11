@@ -44,11 +44,21 @@ class ProductResource extends Resource
                     ->label('Gambar Produk')
                     ->image()
                     ->required(),
-                Forms\Components\TextInput::make('unit')
-                    ->label('Satuan Produk')
+                    Forms\Components\Select::make('unit')
+                    ->label('Satuan Produk / Periode')
                     ->required()
-                    ->maxLength(255)
-                    ->default('unit'),
+                    ->default('pcs')
+                    ->options([
+                        'pcs' => 'Pieces',
+                        'kg' => 'Kilograms',
+                        'cm' => 'Centimeters',
+                        'unit' => 'Unit',
+                        'project' => 'Project',
+                        'bulanan' => 'Monthly',
+                        'kuartalan' => 'Quarterly',
+                        'tahunan' => 'Yearly',
+                    ]),
+                
             ]);
     }
 
@@ -56,21 +66,21 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Gambar Produk'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Produk')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
-                    ->money()
+                    ->prefix('Rp.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock')
                     ->label('Stok Barang')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar Produk'),
                 Tables\Columns\TextColumn::make('unit')
-                    ->label('Satuan Produk')
+                    ->label('Satuan Produk / Periode')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -86,6 +96,7 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
