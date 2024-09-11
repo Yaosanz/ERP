@@ -24,11 +24,14 @@ class CategoryResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Kebutuhan')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Toggle::make('is_expense')
+                    ->label('Pengeluaran')
                     ->required(),
                 Forms\Components\FileUpload::make('image')
+                    ->label('Logo')
                     ->image()
                     ->required(),
             ]);
@@ -38,10 +41,13 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\ImageColumn::make('image')
+                ->label('Logo'),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Fitur')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_expense')
+                    ->label('Pengeluaran')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -61,6 +67,7 @@ class CategoryResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
