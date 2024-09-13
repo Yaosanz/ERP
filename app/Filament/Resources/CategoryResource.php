@@ -23,10 +23,19 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Utilitas')
+                Forms\Components\Select::make('name')
+                    ->label('Kategori Kebutuhan')
                     ->required()
-                    ->maxLength(255),
+                    ->default('Services')
+                    ->options([
+                        'Desain' => 'Design',
+                        'Konsumsi' => 'Consumption',
+                        'Transportasi' => 'Transport',
+                        'Jaringan Internet' => 'Internet',
+                        'Jasa' => 'Services',
+                        'Penggandaan' => 'Item Manufacturing',
+                        'Pemasangan' => 'Installation',
+                    ]),
                 Forms\Components\Toggle::make('is_expense')
                     ->label('Pengeluaran')
                     ->required(),
@@ -44,7 +53,7 @@ class CategoryResource extends Resource
                 Tables\Columns\ImageColumn::make('image')
                 ->label('Logo'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Utilitas')
+                    ->label('Kategori Kebutuhan')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_expense')
                     ->label('Tipe')
@@ -54,14 +63,17 @@ class CategoryResource extends Resource
                     ->trueColor('danger')
                     ->falseColor('success'),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Tanggal Diubah')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
+                    ->label('Tanggal Dihapus')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
