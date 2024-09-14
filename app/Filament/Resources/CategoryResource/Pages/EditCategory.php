@@ -9,7 +9,10 @@ use Filament\Resources\Pages\EditRecord;
 class EditCategory extends EditRecord
 {
     protected static string $resource = CategoryResource::class;
-
+    protected function afterSave(): void
+    {
+        $this->redirect($this->getResource()::getUrl('index'));
+    }
     protected function getHeaderActions(): array
     {
         return [

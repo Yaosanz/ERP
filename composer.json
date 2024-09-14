@@ -8,6 +8,8 @@
         "php": "^8.2",
         "codeat3/blade-carbon-icons": "^2.29",
         "filament/filament": "^3.2",
+        "filament/notifications": "^3.0",
+        "flowframe/laravel-trend": "^0.2.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9"
     },

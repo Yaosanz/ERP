@@ -3,15 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProductResource extends Resource
 {
@@ -25,8 +24,11 @@ class ProductResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->label('Nama Produk')   
-                    ->required()
-                    ->maxLength(255),
+                    ->required(),
+                Forms\Components\Select::make('category_id')
+                    ->label('Kategori')
+                    ->relationship('category', 'name')
+                    ->required(),
                 Forms\Components\Textarea::make('description')
                     ->label('Deskripsi')
                     ->columnSpanFull(),
@@ -37,28 +39,26 @@ class ProductResource extends Resource
                     ->prefix('Rp.'),
                 Forms\Components\TextInput::make('stock')
                     ->label('Stok Barang')
-                    ->required()
                     ->numeric()
                     ->default(1),
                 Forms\Components\FileUpload::make('image')
                     ->label('Gambar Produk')
                     ->image()
                     ->required(),
-                    Forms\Components\Select::make('unit')
+                Forms\Components\Select::make('unit')
                     ->label('Satuan Produk / Periode')
                     ->required()
                     ->default('pcs')
                     ->options([
-                        'pcs' => 'Pieces',
-                        'kg' => 'Kilograms',
-                        'cm' => 'Centimeters',
-                        'unit' => 'Unit',
-                        'project' => 'Project',
-                        'bulanan' => 'Monthly',
-                        'kuartalan' => 'Quarterly',
-                        'tahunan' => 'Yearly',
+                        'Pcs' => 'Pieces',
+                        'Kg' => 'Kilograms',
+                        'Cm' => 'Centimeters',
+                        'Unit' => 'Unit',
+                        'Project' => 'Projects',
+                        'Bulanan' => 'Monthly',
+                        'Kuartalan' => 'Quarterly',
+                        'Tahunan' => 'Yearly',
                     ]),
-                
             ]);
     }
 
@@ -66,10 +66,11 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar Produk'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Produk')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Kategori')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
@@ -83,33 +84,34 @@ class ProductResource extends Resource
                     ->label('Satuan Produk / Periode')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Tanggal Diubah')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('category_id')
+                    ->label('Kategori')
+                    ->options(fn () => Category::pluck('name', 'id'))
+                    ->placeholder('Semua Kategori'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -119,5 +121,14 @@ class ProductResource extends Resource
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
+    }
+
+    public static function afterCreate(Form $form, Transaction $transaction): void
+    {
+        $product = Product::find($transaction->product_id);
+        if ($product) {
+            $product->stock -= $transaction->quantity;
+            $product->save();
+        }
     }
 }
