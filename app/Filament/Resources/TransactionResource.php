@@ -55,9 +55,18 @@ class TransactionResource extends Resource
                     ->label('Jumlah')
                     ->prefix('Rp.')
                     ->required(),
+                Forms\Components\Select::make('status')
+                    ->label('Status')
+                    ->required()
+                    ->options([
+                        'Paid' => 'Sudah Dibayar',
+                        'Unpaid' => 'Belum Dibayar',
+                        'Pending' => 'Tertunda',
+                        'Canceled' => 'Digagalkan',
+                    ])
+                    ->default('Belum Dibayar'),
                 Forms\Components\Textarea::make('description')
                     ->label('Deskripsi')
-                    ->required()
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('image')
                     ->label('Bukti Transaksi')
@@ -98,6 +107,9 @@ class TransactionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Jumlah')

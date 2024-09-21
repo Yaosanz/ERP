@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('date_transaction');
             $table->string('product_name');
             $table->integer('quantity')->default(1);
+            $table->string('status')->default('Unpaid');
             $table->integer('amount');
             $table->text('description');
             $table->string('image');
