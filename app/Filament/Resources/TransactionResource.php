@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
 use Filament\Forms;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -29,51 +31,65 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Nama Transaksi')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('category_id')
-                    ->label('Kategori')
-                    ->relationship('category', 'name')
-                    ->required(),
-                Forms\Components\Select::make('product_id')
-                    ->label('Produk')
-                    ->relationship('product', 'name')
-                    ->required(),
-                Forms\Components\DatePicker::make('date_transaction')
-                    ->label('Tanggal')
-                    ->required(),
-                Forms\Components\TextInput::make('product_name')
-                    ->label('Nama Deksripsi Produk'),
-                Forms\Components\TextInput::make('quantity')
-                    ->label('Kuantitas')
-                    ->required()
-                    ->numeric()
-                    ->default(1),
-                Forms\Components\TextInput::make('amount')
-                    ->label('Jumlah')
-                    ->prefix('Rp.')
-                    ->required(),
-                Forms\Components\Select::make('status')
-                    ->label('Status')
-                    ->required()
-                    ->options([
-                        'Paid' => 'Sudah Dibayar',
-                        'Unpaid' => 'Belum Dibayar',
-                        'Pending' => 'Tertunda',
-                        'Canceled' => 'Digagalkan',
+                Section::make('Detail Transaksi')
+                    ->description('Isi form berikut untuk menambahkan transaksi baru.')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nama Transaksi')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('category_id')
+                            ->label('Kategori')
+                            ->relationship('category', 'name')
+                            ->required(),
+                        Forms\Components\Select::make('product_id')
+                            ->label('Produk')
+                            ->relationship('product', 'name')
+                            ->required(),
+                        Forms\Components\DatePicker::make('date_transaction')
+                            ->label('Tanggal Transaksi')
+                            ->required(),
+                        Forms\Components\TextInput::make('product_name')
+                            ->label('Nama Varian Produk')
+                            ->required(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->label('Kuantitas')
+                            ->required()
+                            ->numeric()
+                            ->default(1),
+                        Forms\Components\TextInput::make('amount')
+                            ->label('Jumlah')
+                            ->prefix('Rp.')
+                            ->required(),
+                        Forms\Components\Select::make('status')
+                            ->label('Status')
+                            ->required()
+                            ->options([
+                                'Paid' => 'Sudah Dibayar',
+                                'Unpaid' => 'Belum Dibayar',
+                                'Pending' => 'Tertunda',
+                                'Canceled' => 'Digagalkan',
+                            ])
+                            ->default('Belum Dibayar'),
+                        MarkdownEditor::make('description')->columnSpan('full')
+                            ->label('Deskripsi Transaksi')
+                            ->required(),
                     ])
-                    ->default('Belum Dibayar'),
-                Forms\Components\Textarea::make('description')
-                    ->label('Deskripsi')
-                    ->columnSpanFull(),
-                Forms\Components\FileUpload::make('image')
-                    ->label('Bukti Transaksi')
-                    ->image()
-                    ->required()
-                    ->visibility('private'),
-            ]);
+                    ->columnSpan(1)
+                    ->columns(2),
+                Section::make('Bukti Transaksi')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\FileUpload::make('image')
+                            ->label('Unggah Bukti')
+                            ->image()
+                            ->required()
+                            ->visibility('private'),
+                    ])
+                    ->columnSpan(1),
+            ])
+            ->columns(2); 
     }
 
     public static function table(Table $table): Table
@@ -95,7 +111,9 @@ class TransactionResource extends Resource
                     ->falseColor('success'),
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Produk')
-                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('product_name')
+                    ->label('Varian Produk')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Kuantitas')

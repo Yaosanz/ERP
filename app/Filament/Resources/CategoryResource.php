@@ -7,6 +7,7 @@ use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -20,31 +21,55 @@ class CategoryResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-c-list-bullet';
 
     public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('name')
-                    ->label('Kategori Kebutuhan')
-                    ->required()
-                    ->default('Services')
-                    ->options([
-                        'Desain' => 'Design',
-                        'Konsumsi' => 'Consumption',
-                        'Transportasi' => 'Transport',
-                        'Jaringan Internet' => 'Internet',
-                        'Jasa' => 'Services',
-                        'Penggandaan' => 'Item Manufacturing',
-                        'Pemasangan' => 'Installation',
-                    ]),
-                Forms\Components\Toggle::make('is_expense')
-                    ->label('Pengeluaran')
-                    ->required(),
-                Forms\Components\FileUpload::make('image')
-                    ->label('Logo')
-                    ->image()
-                    ->required(),
-            ]);
-    }
+{
+    return $form
+        ->schema([
+            Section::make('Informasi Kategori')
+                ->description('Isi informasi kategori kebutuhan berikut.')
+                ->collapsible()
+                ->schema([
+                    Forms\Components\Select::make('name')
+                        ->label('Kategori Kebutuhan')
+                        ->required()
+                        ->default('Services')
+                        ->options([
+                            'Desain' => 'Design',
+                            'Konsumsi' => 'Consumption',
+                            'Transportasi' => 'Transport',
+                            'Jaringan Internet' => 'Internet',
+                            'Jasa' => 'Services',
+                            'Penggandaan' => 'Item Manufacturing',
+                            'Pemasangan' => 'Installation',
+                        ]),
+                ])
+                ->columnSpan(1),
+
+            Section::make('Tipe Pengeluaran')
+                ->description('Nyalakan jika kategori ini adalah pengeluaran dan matikan jika kategori ini adalah pemasukan.')
+                ->collapsible()
+                ->schema([
+                    Forms\Components\Toggle::make('is_expense')
+                        ->label('Pemasukan Atau Pengeluaran')
+                        ->required(),
+                ])
+                ->columnSpan(1),
+
+           
+            Section::make('Logo Kategori')
+                ->description('Cari logo sesuai dengan kebutuhan melalui situs yang bernama Flaticon atau Freepik.')
+                ->collapsible()
+                ->schema([
+                    Forms\Components\FileUpload::make('image')
+                        ->label('Logo Kategori')
+                        ->image()
+                        ->required(),
+                ])
+                ->columnSpan(1),
+        ])
+        ->columns(2);  
+}
+
+
 
     public static function table(Table $table): Table
     {

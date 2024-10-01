@@ -6,9 +6,13 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
+use Doctrine\DBAL\Schema\Column;
 use Filament\Forms;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -22,44 +26,53 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Nama Produk')   
-                    ->required(),
-                Forms\Components\Select::make('category_id')
-                    ->label('Kategori')
-                    ->relationship('category', 'name')
-                    ->required(),
-                Forms\Components\Textarea::make('description')
-                    ->label('Deskripsi')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('price')
-                    ->label('Harga')
-                    ->required()
-                    ->numeric()
-                    ->prefix('Rp.'),
-                Forms\Components\TextInput::make('stock')
-                    ->label('Stok Barang')
-                    ->numeric()
-                    ->default(1),
-                Forms\Components\FileUpload::make('image')
-                    ->label('Gambar Produk')
-                    ->image()
-                    ->required(),
-                Forms\Components\Select::make('unit')
-                    ->label('Satuan Produk / Periode')
-                    ->required()
-                    ->default('pcs')
-                    ->options([
-                        'Pcs' => 'Pieces',
-                        'Kg' => 'Kilograms',
-                        'Cm' => 'Centimeters',
-                        'Unit' => 'Unit',
-                        'Project' => 'Projects',
-                        'Bulanan' => 'Monthly',
-                        'Kuartalan' => 'Quarterly',
-                        'Tahunan' => 'Yearly',
-                    ]),
-            ]);
+                Section::make('Tambahkan Produk')
+                ->description('Silahkan isi form berikut untuk menambahkan produk baru.')
+                ->collapsible()
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('Nama Produk')   
+                        ->required(),
+                    Forms\Components\Select::make('category_id')
+                        ->label('Kategori')
+                        ->relationship('category', 'name')
+                        ->required(),
+                    Forms\Components\TextInput::make('price')
+                        ->label('Harga')
+                        ->numeric()
+                        ->required()
+                        ->prefix('Rp.'),
+                    Forms\Components\TextInput::make('stock')
+                        ->label('Stok Barang')
+                        ->numeric()
+                        ->required()
+                        ->default(1),
+                    Forms\Components\Select::make('unit')
+                        ->label('Satuan Produk / Periode')
+                        ->required()
+                        ->options([
+                            'Pcs' => 'Pieces',
+                            'Kg' => 'Kilograms',
+                            'Cm' => 'Centimeters',
+                            'Unit' => 'Unit',
+                            'Project' => 'Projects',
+                            'Bulanan' => 'Monthly',
+                            'Kuartalan' => 'Quarterly',
+                            'Tahunan' => 'Yearly',
+                        ]),
+                    MarkdownEditor::make('description')->columnSpan('full')
+                        ->label('Deskripsi Produk'),
+                ])->columnSpan(1)->columns(2),
+                
+                Section::make('Gambar')
+                ->collapsible()
+                ->schema([
+                    Forms\Components\FileUpload::make('image')
+                        ->label('Gambar Produk')
+                        ->required()
+                        ->image(),
+                ])->columnSpan(1),
+            ])->columns(2);
     }
 
     public static function table(Table $table): Table
@@ -71,6 +84,9 @@ class ProductResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('Kategori')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->label('Deskripsi')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
