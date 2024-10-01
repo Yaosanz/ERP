@@ -31,15 +31,23 @@ class CategoryResource extends Resource
                     Forms\Components\Select::make('name')
                         ->label('Kategori Kebutuhan')
                         ->required()
-                        ->default('Services')
+                        ->unique()
                         ->options([
-                            'Desain' => 'Design',
-                            'Konsumsi' => 'Consumption',
-                            'Transportasi' => 'Transport',
-                            'Jaringan Internet' => 'Internet',
-                            'Jasa' => 'Services',
-                            'Penggandaan' => 'Item Manufacturing',
-                            'Pemasangan' => 'Installation',
+                            'Konsumsi' => 'Konsumsi',
+                            'Transportasi' => 'Transportasi',
+                            'Jaringan Internet' => 'Jaringan Internet',
+                            'Jasa' => 'Jasa',
+                            'Penggandaan Barang' => 'Penggandaan Barang',
+                            'Pemasangan' => 'Pemasangan',
+                            'Penjualan Barang' => 'Penjualan Barang',
+                            'Pemeliharaan' => 'Pemeliharaan',
+                            'Pembelian' => 'Pembelian',
+                            'Pengiriman' => 'Pengiriman',
+                            'Gajian' => 'Gajian',
+                            'Pembayaran' => 'Pembayaran',
+                            'Penjualan' => 'Penjualan',
+                            'Pengeluaran Lainnya' => 'Pengeluaran Lainnya',
+                            'Pemasukan Lainnya' => 'Pemasukan Lainnya',
                         ]),
                 ])
                 ->columnSpan(1),

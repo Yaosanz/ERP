@@ -31,7 +31,10 @@ class ProductResource extends Resource
                 ->collapsible()
                 ->schema([
                     Forms\Components\TextInput::make('name')
-                        ->label('Nama Produk')   
+                        ->label('Nama Produk') 
+                        ->unique()
+                        ->maxLength(20) 
+                        ->minLength(3) 
                         ->required(),
                     Forms\Components\Select::make('category_id')
                         ->label('Kategori')
@@ -39,12 +42,16 @@ class ProductResource extends Resource
                         ->required(),
                     Forms\Components\TextInput::make('price')
                         ->label('Harga')
+                        ->maxLength(10)
+                        ->minLength(3)
                         ->numeric()
                         ->required()
                         ->prefix('Rp.'),
                     Forms\Components\TextInput::make('stock')
                         ->label('Stok Barang')
                         ->numeric()
+                        ->maxLength(7)
+                        ->minLength(1)
                         ->required()
                         ->default(1),
                     Forms\Components\Select::make('unit')
@@ -61,7 +68,9 @@ class ProductResource extends Resource
                             'Tahunan' => 'Yearly',
                         ]),
                     MarkdownEditor::make('description')->columnSpan('full')
-                        ->label('Deskripsi Produk'),
+                        ->label('Deskripsi Produk')
+                        ->maxLength(255) 
+                        ->minLength(3),
                 ])->columnSpan(1)->columns(2),
                 
                 Section::make('Gambar')

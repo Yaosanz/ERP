@@ -38,7 +38,9 @@ class TransactionResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Transaksi')
                             ->required()
-                            ->maxLength(255),
+                            ->unique()
+                            ->maxLength(50) 
+                            ->minLength(3),
                         Forms\Components\Select::make('category_id')
                             ->label('Kategori')
                             ->relationship('category', 'name')
@@ -52,15 +54,21 @@ class TransactionResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('product_name')
                             ->label('Nama Varian Produk')
+                            ->maxLength(50) 
+                            ->minLength(3)
                             ->required(),
                         Forms\Components\TextInput::make('quantity')
                             ->label('Kuantitas')
                             ->required()
+                            ->maxLength(7) 
+                            ->minLength(1)
                             ->numeric()
                             ->default(1),
                         Forms\Components\TextInput::make('amount')
                             ->label('Jumlah')
                             ->prefix('Rp.')
+                            ->maxLength(10) 
+                            ->minLength(3)
                             ->required(),
                         Forms\Components\Select::make('status')
                             ->label('Status')
@@ -74,6 +82,8 @@ class TransactionResource extends Resource
                             ->default('Belum Dibayar'),
                         MarkdownEditor::make('description')->columnSpan('full')
                             ->label('Deskripsi Transaksi')
+                            ->maxLength(255) 
+                            ->minLength(3)
                             ->required(),
                     ])
                     ->columnSpan(1)
