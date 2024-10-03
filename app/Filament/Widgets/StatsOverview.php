@@ -26,12 +26,12 @@ class StatsOverview extends BaseWidget
             : now();
 
         $income = Transaction::incomes()
-            ->where('status', 'Paid') // Only include 'paid' transactions
+            ->where('status', 'Paid') 
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->sum('amount');
 
         $outcome = Transaction::expenses()
-            ->where('status', 'Paid') // Only include 'paid' transactions
+            ->where('status', 'Paid') 
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->sum('amount');
 

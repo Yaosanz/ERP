@@ -21,7 +21,8 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'carbon-ibm-data-product-exchange';
-
+    protected static ?string $navigationGroup = "Manajemen";
+    protected static ?int $navigationSort = 2;
     public static function form(Form $form): Form
     {
         return $form
@@ -32,7 +33,6 @@ class ProductResource extends Resource
                 ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('Nama Produk') 
-                        ->unique()
                         ->maxLength(20) 
                         ->minLength(3) 
                         ->required(),
@@ -45,40 +45,36 @@ class ProductResource extends Resource
                         ->maxLength(10)
                         ->minLength(3)
                         ->numeric()
-                        ->required()
                         ->prefix('Rp.'),
                     Forms\Components\TextInput::make('stock')
                         ->label('Stok Barang')
                         ->numeric()
                         ->maxLength(7)
                         ->minLength(1)
-                        ->required()
                         ->default(1),
                     Forms\Components\Select::make('unit')
-                        ->label('Satuan Produk / Periode')
+                        ->label('Satuan Produk Atau Periode')
                         ->required()
                         ->options([
-                            'Pcs' => 'Pieces',
-                            'Kg' => 'Kilograms',
-                            'Cm' => 'Centimeters',
+                            'Pieces' => 'Pieces',
+                            'Kilograms' => 'Kilograms',
+                            'Centimeters' => 'Centimeters',
                             'Unit' => 'Unit',
-                            'Project' => 'Projects',
-                            'Bulanan' => 'Monthly',
-                            'Kuartalan' => 'Quarterly',
-                            'Tahunan' => 'Yearly',
+                            'Projects' => 'Projects',
+                            'Monthly' => 'Monthly',
+                            'Quarterly' => 'Quarterly',
+                            'Yearly' => 'Yearly',
                         ]),
                     MarkdownEditor::make('description')->columnSpan('full')
                         ->label('Deskripsi Produk')
                         ->maxLength(255) 
                         ->minLength(3),
                 ])->columnSpan(1)->columns(2),
-                
                 Section::make('Gambar')
                 ->collapsible()
                 ->schema([
                     Forms\Components\FileUpload::make('image')
                         ->label('Gambar Produk')
-                        ->required()
                         ->image(),
                 ])->columnSpan(1),
             ])->columns(2);

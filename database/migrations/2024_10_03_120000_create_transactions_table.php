@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->foreignId('category_id')->nullable()->constrained('categories')->cascadeOnDelete();
+            $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnDelete();
             $table->date('date_transaction');
-            $table->string('product_name');
-            $table->integer('quantity')->default(1);
+            $table->string('product_name')->nullable();
+            $table->integer('quantity')->nullable();
             $table->string('status')->default('Unpaid');
             $table->integer('amount');
-            $table->text('description');
-            $table->string('image');
+            $table->text('description')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

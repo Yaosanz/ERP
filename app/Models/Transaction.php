@@ -25,23 +25,37 @@ class Transaction extends Model
 
     protected static function booted()
     {
-        static::created(function ($transaction) {
-            $transaction->updateProductStock(-$transaction->quantity);
-        });
+    static::created(function ($transaction) {
+        $quantity = $transaction->quantity ?? 0;
+        $transaction->updateProductStock(-$quantity);
+    });
 
-        static::deleted(function ($transaction) {
-            $transaction->updateProductStock($transaction->quantity);
-        });
+    static::deleted(function ($transaction) {
+        $quantity = $transaction->quantity ?? 0; 
+        $transaction->updateProductStock($quantity);
+    });
 
-        static::updating(function ($transaction) {
-            if ($transaction->isDirty('quantity')) {
-                $originalQuantity = $transaction->getOriginal('quantity');
-                $quantityChange = $transaction->quantity - $originalQuantity;
+    static::updating(function ($transaction) {
+        if ($transaction->isDirty('quantity')) {
+            $originalQuantity = $transaction->getOriginal('quantity') ?? 0;
+            $quantityChange = $transaction->quantity - $originalQuantity;
+            $transaction->updateProductStock(-$quantityChange);
+        }
+    });
+}
 
-                $transaction->updateProductStock(-$quantityChange);
-            }
-        });
+    public function updateProductStock(int $quantityChange): void
+    {
+    if ($this->product) {
+        $product = $this->product;
+
+        if ($quantityChange !== 0) {
+            $product->stock += $quantityChange;
+            $product->save();
+        }
     }
+}
+
 
     public function category(): BelongsTo
     {
@@ -53,15 +67,6 @@ class Transaction extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function updateProductStock(int $quantityChange): void
-    {
-        $product = $this->product;
-
-        if ($product) {
-            $product->stock += $quantityChange;
-            $product->save();
-        }
-    }
 
     public function scopeExpenses($query)
 {

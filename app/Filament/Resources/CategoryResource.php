@@ -19,7 +19,8 @@ class CategoryResource extends Resource
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-c-list-bullet';
-
+    protected static ?string $navigationGroup = "Model Bisnis";
+    protected static ?int $navigationSort = 1;
     public static function form(Form $form): Form
 {
     return $form
@@ -31,7 +32,6 @@ class CategoryResource extends Resource
                     Forms\Components\Select::make('name')
                         ->label('Kategori Kebutuhan')
                         ->required()
-                        ->unique()
                         ->options([
                             'Konsumsi' => 'Konsumsi',
                             'Transportasi' => 'Transportasi',
@@ -43,7 +43,7 @@ class CategoryResource extends Resource
                             'Pemeliharaan' => 'Pemeliharaan',
                             'Pembelian' => 'Pembelian',
                             'Pengiriman' => 'Pengiriman',
-                            'Gajian' => 'Gajian',
+                            'Gaji' => 'Gaji',
                             'Pembayaran' => 'Pembayaran',
                             'Penjualan' => 'Penjualan',
                             'Pengeluaran Lainnya' => 'Pengeluaran Lainnya',
@@ -52,12 +52,13 @@ class CategoryResource extends Resource
                 ])
                 ->columnSpan(1),
 
-            Section::make('Tipe Pengeluaran')
+            Section::make('Kategori Bisnis')
                 ->description('Nyalakan jika kategori ini adalah pengeluaran dan matikan jika kategori ini adalah pemasukan.')
                 ->collapsible()
                 ->schema([
                     Forms\Components\Toggle::make('is_expense')
                         ->label('Pemasukan Atau Pengeluaran')
+                        ->default(true)
                         ->required(),
                 ])
                 ->columnSpan(1),
@@ -70,7 +71,6 @@ class CategoryResource extends Resource
                     Forms\Components\FileUpload::make('image')
                         ->label('Logo Kategori')
                         ->image()
-                        ->required(),
                 ])
                 ->columnSpan(1),
         ])

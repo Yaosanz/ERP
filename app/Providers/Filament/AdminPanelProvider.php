@@ -33,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->login()
             ->databaseNotifications()
+            ->darkMode()
             ->brandName('Surya Cipta Estetika Mandiri')
             ->colors([
                 'primary' => Color::Amber,
