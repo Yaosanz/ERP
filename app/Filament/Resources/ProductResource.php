@@ -22,6 +22,7 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'carbon-ibm-data-product-exchange';
     protected static ?string $navigationGroup = "Manajemen";
+    protected static ?string $navigationLabel = 'Daftar Produk';
     protected static ?int $navigationSort = 2;
     public static function form(Form $form): Form
     {
