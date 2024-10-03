@@ -20,7 +20,7 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-c-list-bullet';
     protected static ?string $navigationGroup = "Model Bisnis";
-    protected static ?string $navigationLabel = 'Kategori Kebutuhan';
+    protected static ?string $navigationLabel = 'Kelola Bisnis Model';
     protected static ?int $navigationSort = 1;
     public static function form(Form $form): Form
 {
@@ -53,13 +53,13 @@ class CategoryResource extends Resource
                 ])
                 ->columnSpan(1),
 
-            Section::make('Kategori Bisnis')
-                ->description('Nyalakan jika kategori ini adalah pengeluaran dan matikan jika kategori ini adalah pemasukan.')
+            Section::make('Bisnis Model')
+                ->description('Matikan jika kategori ini adalah pemasukan Atau Nyalakan jika kategori ini adalah pengeluaran.')
                 ->collapsible()
                 ->schema([
                     Forms\Components\Toggle::make('is_expense')
                         ->label('Pemasukan Atau Pengeluaran')
-                        ->default(true)
+                        ->default(false)
                         ->required(),
                 ])
                 ->columnSpan(1),
@@ -88,6 +88,7 @@ class CategoryResource extends Resource
                 ->label('Logo'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Kategori Kebutuhan')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_expense')
                     ->label('Tipe')
@@ -100,16 +101,19 @@ class CategoryResource extends Resource
                     ->label('Tanggal Dibuat')
                     ->dateTime()
                     ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Tanggal Diubah')
                     ->dateTime()
                     ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->label('Tanggal Dihapus')
                     ->dateTime()
                     ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
