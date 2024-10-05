@@ -1,21 +1,19 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Resources\TransactionResource\Widgets;
 
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class TransactionStatsWidget extends BaseWidget
+class StatsTransaction extends BaseWidget
 {
-    protected static ?string $pollingInterval = null;
-    protected static bool $isLazy = false;
-
     protected function getStats(): array
     {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now();
+        $now = Carbon::now();
+        $startDate = $now->startOfMonth();
+        $endDate = $now;
 
         $income = Transaction::incomes()
             ->where('status', 'Paid')
