@@ -7,13 +7,15 @@ use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class StatsTransaction extends BaseWidget
+class TransactionStatsWidget extends BaseWidget
 {
+    protected static ?string $pollingInterval = null;
+    protected static bool $isLazy = false;
+
     protected function getStats(): array
     {
-        $now = Carbon::now();
-        $startDate = $now->startOfMonth();
-        $endDate = $now;
+        $startDate = Carbon::now()->startOfMonth();
+        $endDate = Carbon::now();
 
         $income = Transaction::incomes()
             ->where('status', 'Paid')
