@@ -34,7 +34,7 @@ class TransactionResource extends Resource
 
     protected static ?string $navigationIcon = 'carbon-currency';
     protected static ?string $navigationGroup = "Pembayaran";
-    protected static ?string $navigationLabel = 'Kelola Pembayaran';
+    protected static ?string $navigationLabel = 'Pembayaran Produk';
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
