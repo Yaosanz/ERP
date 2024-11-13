@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmployeePaymentResource\Pages;
+use App\Models\Employee;
 use App\Models\EmployeePayment;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -10,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Livewire\Component;
 
 class EmployeePaymentResource extends Resource
 {
@@ -31,10 +33,18 @@ class EmployeePaymentResource extends Resource
                         Forms\Components\Select::make('employee_id')
                             ->label('Karyawan')
                             ->relationship('employee', 'name')
-                            ->required(),
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                if ($state) {
+                                    $employee = Employee::find($state);
+                                    $set('amount', $employee ? $employee->salary : 0);
+                                }
+                            }),
                         Forms\Components\TextInput::make('amount')
                             ->label('Jumlah Pembayaran')
                             ->numeric()
+                            ->disabled()
                             ->prefix('Rp.')
                             ->required(),
                         Forms\Components\DatePicker::make('payment_date')
@@ -48,6 +58,15 @@ class EmployeePaymentResource extends Resource
                                 'Bank Transfer' => 'Bank Transfer',
                                 'Mobile Payment' => 'Mobile Payment',
                             ]),
+                        Forms\Components\Select::make('status')
+                            ->label('Status')
+                            ->required()
+                            ->options([
+                                'Paid' => 'Paid',
+                                'Unpaid' => 'Unpaid',
+                                'Pending' => 'Pending',
+                                'Cancelled' => 'Cancelled',
+                            ])
                     ])->columnSpan(1)->columns(2),
             ])->columns(2);
     }
@@ -72,6 +91,10 @@ class EmployeePaymentResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Metode Pembayaran')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status Pembayaran')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

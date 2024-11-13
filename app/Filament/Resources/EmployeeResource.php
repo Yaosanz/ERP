@@ -25,33 +25,62 @@ class EmployeeResource extends Resource
         return $form
             ->schema([
                 Section::make('Informasi Karyawan')
-                    ->description('Silahkan isi form berikut untuk menambahkan karyawan baru.')
+                    ->description('Isi detail informasi karyawan di bawah ini.')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Karyawan')
-                            ->maxLength(50)
-                            ->minLength(3)
                             ->required(),
                         Forms\Components\TextInput::make('email')
                             ->label('Email')
                             ->email()
+                            ->unique(Employee::class, 'email')
                             ->required(),
+                        Forms\Components\Select::make('gender')
+                            ->label('Jenis Kelamin')
+                            ->options([
+                                'Male' => 'Male',
+                                'Female' => 'Female',
+                                'Other' => 'Other',
+                            ])
+                            ->nullable(),
                         Forms\Components\TextInput::make('position')
                             ->label('Posisi')
-                            ->maxLength(50)
-                            ->minLength(3)
                             ->required(),
+                        Forms\Components\TextInput::make('division')
+                            ->label('Divisi')
+                            ->nullable(),
                         Forms\Components\TextInput::make('salary')
                             ->label('Gaji')
                             ->numeric()
-                            ->prefix('Rp.')
                             ->required(),
                         Forms\Components\DatePicker::make('hire_date')
                             ->label('Tanggal Bergabung')
                             ->required(),
-                    ])->columnSpan(1)->columns(2),
-            ])->columns(2);
+                    ])->columns(2),  
+
+                Section::make('Detail Alamat')
+                    ->description('Isi detail alamat karyawan di bawah ini.')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\TextInput::make('address')
+                            ->label('Alamat')
+                            ->placeholder('Jl. Contoh No. 123 RT 01 RW 02 Kel. Contoh Kec. Contoh Kab. Contoh')
+                            ->nullable(),
+                        Forms\Components\TextInput::make('postal_code')
+                            ->label('Kode Pos')
+                            ->nullable(),
+                        Forms\Components\TextInput::make('province')
+                            ->label('Provinsi')
+                            ->nullable(),
+                        Forms\Components\TextInput::make('city')
+                            ->label('Kota')
+                            ->nullable(),
+                        Forms\Components\TextInput::make('country')
+                            ->label('Negara')
+                            ->nullable(),
+                    ])->columns(2),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -70,6 +99,11 @@ class EmployeeResource extends Resource
                     ->label('Posisi')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('division')
+                    ->label('Divisi')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('salary')
                     ->label('Gaji')
                     ->prefix('Rp.')

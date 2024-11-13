@@ -10,10 +10,11 @@ return new class extends Migration
     {
         Schema::create('employee_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained('employees');
+            $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
             $table->integer('amount');
             $table->date('payment_date');
             $table->string('payment_method');
+            $table->string('status')->default('Unpaid');
             $table->timestamps();
         });
     }

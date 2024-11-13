@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('market_conditions', function (Blueprint $table) {
+        Schema::create('departements', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->date('date');
-            $table->decimal('economic_indicator', 10, 2); 
-            $table->string('market_trend'); 
-            $table->timestamps(); 
+            $table->string('division')->nullable()->constrained('employees')->cascadeOnDelete();
+            $table->string('position')->nullable()->constrained('employees')->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('market_conditions');
+        Schema::dropIfExists('departements');
     }
 };
