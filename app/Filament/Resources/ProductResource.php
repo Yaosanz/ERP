@@ -19,7 +19,6 @@ use Filament\Tables\Table;
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
-
     protected static ?string $navigationIcon = 'carbon-ibm-data-product-exchange';
     protected static ?string $navigationGroup = "Manajemen";
     protected static ?string $navigationLabel = 'Kelola Produk';
@@ -60,6 +59,7 @@ class ProductResource extends Resource
                             'Pieces' => 'Pieces',
                             'Kilograms' => 'Kilograms',
                             'Centimeters' => 'Centimeters',
+                            'Meter' => 'Meter',
                             'Unit' => 'Unit',
                             'Projects' => 'Projects',
                             'Monthly' => 'Monthly',

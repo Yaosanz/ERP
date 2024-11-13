@@ -22,7 +22,7 @@ class BlogResource extends Resource
     protected static ?string $navigationGroup = "Konten Blog";
     protected static ?string $navigationLabel = 'Kelola Blog';
     protected static ?int $navigationSort = 4;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'carbon-blog';
 
     public static function form(Form $form): Form
     {

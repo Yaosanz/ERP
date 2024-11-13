@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\TransactionResource\Pages;
 
+use App\Filament\Resources\TransactionResource\Widgets\TransactionStatsWidget;
 use App\Filament\Resources\TransactionResource;
-use App\Filament\Widgets\TransactionStatsWidget;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
@@ -23,7 +23,7 @@ class ListTransactions extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            TransactionStatsWidget::class
+            TransactionStatsWidget::class,
         ];
     }
 

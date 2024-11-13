@@ -2,11 +2,8 @@
 
 namespace App\Filament\Resources\ProductResource\Pages;
 
-use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ProductResource\Widgets\ProductStatsWidget;
-use App\Filament\Resources\ProductResource\Widgets\SoldProductWidget;
-use App\Filament\Widgets\StatsOverview;
-use App\Filament\Widgets\WidgetIncomeChart;
+use App\Filament\Resources\ProductResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
