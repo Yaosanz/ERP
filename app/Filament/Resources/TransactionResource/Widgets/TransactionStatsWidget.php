@@ -4,7 +4,6 @@ namespace App\Filament\Resources\TransactionResource\Widgets;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
-use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -15,23 +14,20 @@ class TransactionStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now();
-
+        // Fetching income data (all transactions with "Paid" status)
         $income = Transaction::incomes()
             ->where('status', 'Paid')
-            ->whereBetween('date_transaction', [$startDate, $endDate])
             ->sum('amount');
 
+        // Fetching outcome data (all expenses with "Paid" status)
         $outcome = Transaction::expenses()
             ->where('status', 'Paid')
-            ->whereBetween('date_transaction', [$startDate, $endDate])
             ->sum('amount');
 
-        $employeePayments = EmployeePayment::where('status', 'Paid')
-            ->whereBetween('payment_date', [$startDate, $endDate])
-            ->sum('amount');
+        // Employee payment data for all records with "Paid" status
+        $employeePayments = EmployeePayment::where('status', 'Paid')->sum('amount');
 
+        // Calculate profit
         $profit = $income - $outcome - $employeePayments;
 
         return [
@@ -48,7 +44,7 @@ class TransactionStatsWidget extends BaseWidget
                 ->color($outcome >= 0 ? 'danger' : 'success'),
 
             Stat::make('Total Pembayaran Karyawan', 'Rp. ' . number_format($employeePayments))
-                ->description('Pembayaran Bulan Ini')
+                ->description('Pembayaran Karyawan')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->chart($this->generateDynamicChart($employeePayments, true))
                 ->color('info'),
@@ -61,27 +57,26 @@ class TransactionStatsWidget extends BaseWidget
         ];
     }
 
-  
     protected function generateDynamicChart($amount, $isPositive)
     {
         $chartValues = $isPositive ? [
-            $amount * 0.1,  
-            $amount * 0.25, 
-            $amount * 0.5,  
-            $amount * 0.75, 
-            $amount * 1.0,  
-            $amount * 1.5, 
-            $amount * 2.0, 
+            $amount * 0.1,
+            $amount * 0.25,
+            $amount * 0.5,
+            $amount * 0.75,
+            $amount * 1.0,
+            $amount * 1.5,
+            $amount * 2.0,
         ] : [
-            $amount * 2.0,  
-            $amount * 1.5,  
-            $amount * 1.0,  
-            $amount * 0.75, 
-            $amount * 0.5,  
-            $amount * 0.25, 
-            $amount * 0.1, 
+            $amount * 2.0,
+            $amount * 1.5,
+            $amount * 1.0,
+            $amount * 0.75,
+            $amount * 0.5,
+            $amount * 0.25,
+            $amount * 0.1,
         ];
-    
+
         return $chartValues;
-    }    
+    }
 }
