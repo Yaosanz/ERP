@@ -17,7 +17,7 @@ class WidgetExpenseChart extends ChartWidget
 
     protected function getData(): array
     {
-        // Jika tanggal tidak di-set
+        
         if (empty($this->filters['startDate'] ?? null) || empty($this->filters['endDate'] ?? null)) {
             return [
                 'datasets' => [
@@ -51,11 +51,11 @@ class WidgetExpenseChart extends ChartWidget
             ];
         }
 
-        // Set tanggal awal dan akhir
+        
         $startDate = Carbon::parse($this->filters['startDate']);
         $endDate = Carbon::parse($this->filters['endDate']);
 
-        // Ambil transaksi pengeluaran umum
+    
         $expenses = Transaction::expenses()
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
@@ -63,7 +63,7 @@ class WidgetExpenseChart extends ChartWidget
             ->orderBy('date')
             ->get();
 
-        // Ambil transaksi gaji karyawan
+
         $salaryExpenses = EmployeePayment::expenses()
             ->whereBetween('payment_date', [$startDate, $endDate])
             ->selectRaw('DATE(payment_date) as date, SUM(amount) as total')
@@ -71,13 +71,13 @@ class WidgetExpenseChart extends ChartWidget
             ->orderBy('date')
             ->get();
 
-        // Ambil rentang tanggal
+        
         $dates = $this->getDateRange($startDate, $endDate);
         $labels = $dates->map(function ($date) {
             return Carbon::parse($date)->format('Y-m-d');
         })->toArray();
 
-        // Hitung total pengeluaran harian
+        
         $generalExpenseData = $this->getDailyTotals($expenses, $dates);
         $salaryExpenseData = $this->getDailyTotals($salaryExpenses, $dates);
 
