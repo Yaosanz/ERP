@@ -3,6 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmployeeResource\Pages;
+use App\Models\Departement;
+use App\Models\Division;
 use App\Models\Employee;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -15,7 +17,7 @@ class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationIcon = 'clarity-employee-group-line';
     protected static ?string $navigationGroup = "Manajemen";
     protected static ?string $navigationLabel = 'Kelola Karyawan';
     protected static ?int $navigationSort = 3;
@@ -34,8 +36,7 @@ class EmployeeResource extends Resource
                         Forms\Components\TextInput::make('email')
                             ->label('Email')
                             ->email()
-                            ->unique(Employee::class, 'email')
-                            ->required(),
+                            ->unique(Employee::class, 'email'),
                         Forms\Components\Select::make('gender')
                             ->label('Jenis Kelamin')
                             ->options([
@@ -43,20 +44,26 @@ class EmployeeResource extends Resource
                                 'Female' => 'Female',
                                 'Other' => 'Other',
                             ])
-                            ->nullable(),
+                            ->required(),
                         Forms\Components\TextInput::make('position')
                             ->label('Posisi')
-                            ->required(),
-                        Forms\Components\TextInput::make('division')
-                            ->label('Divisi')
                             ->nullable(),
+                        Forms\Components\Select::make('division')
+                            ->label('Divisi')
+                            ->options(Division::all()->pluck('division_name', 'id')->toArray()) 
+                            ->nullable(),
+                        
+                        Forms\Components\Select::make('department_id')
+                            ->label('Department')
+                            ->relationship('department', 'name')
+                            ->required(),
                         Forms\Components\TextInput::make('salary')
                             ->label('Gaji')
                             ->numeric()
                             ->required(),
                         Forms\Components\DatePicker::make('hire_date')
                             ->label('Tanggal Bergabung')
-                            ->required(),
+                            ->nullable(),
                     ])->columns(2),  
 
                 Section::make('Detail Alamat')

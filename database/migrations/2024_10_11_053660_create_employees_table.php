@@ -12,16 +12,17 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->enum('gender', ['Male', 'Female', 'Other'])->nullable();
+            $table->enum('gender', ['Male', 'Female', 'Other']);
             $table->string('address')->nullable();
             $table->string('province')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->string('postal_code')->nullable();
-            $table->string('position');
+            $table->string('position')->nullable();
             $table->string('division')->nullable();
             $table->integer('salary');
-            $table->date('hire_date');
+            $table->date('hire_date')->nullable();
+            $table->foreignId('departement_id')->constrained('departments')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -31,4 +32,3 @@ return new class extends Migration
         Schema::dropIfExists('employees');
     }
 };
-

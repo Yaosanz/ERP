@@ -1,30 +1,19 @@
 <?php
 
 namespace App\Filament\Resources;
-use App\Exports\TransactionExport;
 use App\Filament\Resources\TransactionResource\Pages;
-use App\Filament\Resources\TransactionResource\RelationManagers;
-use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
-use Illuminate\Database\Eloquent\Collection;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\ExportAction as ActionsExportAction;
 use App\Filament\Exports\TransactionExporter;
 use App\Filament\Imports\TransactionImporter;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Table;
-use Filament\Tables\Filters\DateFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Maatwebsite\Excel\Facades\Excel;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
 
@@ -32,10 +21,10 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static ?string $navigationIcon = 'carbon-currency';
-    protected static ?string $navigationGroup = "Pembayaran";
+    protected static ?string $navigationIcon = 'carbon-product';
+    protected static ?string $navigationGroup = "Transaksi";
     protected static ?string $navigationLabel = 'Pembayaran Produk';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

@@ -22,10 +22,16 @@ class Employee extends Model
         'division',
         'salary',
         'hire_date',
+        'department_id',
     ];
 
     public function payments()
     {
         return $this->hasMany(EmployeePayment::class);
     }
+        public function department()
+    {
+        return $this->belongsTo(Departement::class);
+    }
+
 }

@@ -17,9 +17,9 @@ class EmployeePaymentResource extends Resource
 {
     protected static ?string $model = EmployeePayment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-s-currency-dollar';
-    protected static ?string $navigationGroup = "Pembayaran";
-    protected static ?string $navigationLabel = 'Pembayaran Karyawan';
+    protected static ?string $navigationIcon = 'clarity-employee-line';
+    protected static ?string $navigationGroup = "Transaksi";
+    protected static ?string $navigationLabel = 'Gaji Karyawan';
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
@@ -31,7 +31,7 @@ class EmployeePaymentResource extends Resource
                     ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('employee_id')
-                            ->label('Karyawan')
+                            ->label('Nama Karyawan')
                             ->relationship('employee', 'name')
                             ->required()
                             ->reactive()
@@ -76,7 +76,7 @@ class EmployeePaymentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('employee.name')
-                    ->label('Karyawan')
+                    ->label('Nama Karyawan')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
