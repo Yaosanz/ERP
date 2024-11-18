@@ -82,6 +82,9 @@ class EmployeePaymentResource extends Resource
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Jumlah Pembayaran')
                     ->prefix('Rp.')
+                    ->formatStateUsing(function ($state) {
+                        return 'Rp. ' . number_format($state, 0, ',', '.');
+                    })
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('payment_date')

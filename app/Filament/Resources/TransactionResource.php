@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -55,9 +56,11 @@ class TransactionResource extends Resource
                             $set('amount', ($product?->price ?? 0) * 1);
                         }),
 
-                    Forms\Components\TextInput::make('price')
+                    TextInput::make('price')
                         ->label('Harga Produk')
-                        ->disabled(),
+                        ->reactive() 
+                        ->disabled()
+                        ->prefix('Rp.'),
 
                     Forms\Components\TextInput::make('quantity')
                         ->label('Kuantitas')
@@ -74,6 +77,8 @@ class TransactionResource extends Resource
                     Forms\Components\TextInput::make('amount')
                         ->label('Jumlah')
                         ->prefix('Rp.')
+                        ->numeric()
+                        ->reactive()
                         ->required()
                         ->disabled(),
 
@@ -153,6 +158,9 @@ public static function table(Table $table): Table
             Tables\Columns\TextColumn::make('amount')
                 ->label('Jumlah')
                 ->money('IDR', locale: 'id')
+                ->formatStateUsing(function ($state) {
+                    return 'Rp. ' . number_format($state, 0, ',', '.');
+                })
                 ->sortable()
                 ->toggleable()
                 ->searchable(),

@@ -19,19 +19,26 @@ class Employee extends Model
         'country',
         'postal_code',
         'position',
-        'division',
         'salary',
         'hire_date',
-        'department_id',
+        'departments_id',
+        'divisions_id',
     ];
 
     public function payments()
     {
         return $this->hasMany(EmployeePayment::class);
     }
-        public function department()
+    
+    public function department()
     {
-        return $this->belongsTo(Departement::class);
+        return $this->belongsTo(Departement::class, 'departments_id'); 
     }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'divisions_id'); 
+    }
+
 
 }

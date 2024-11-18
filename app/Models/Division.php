@@ -11,12 +11,18 @@ use Illuminate\Database\Eloquent\Model;
 
         protected $fillable = [
         'division_name',
-        'department_id'
+        'department_id',
+        'description'
     ];
 
     public function department()
     {
         return $this->belongsTo(Departement::class);
     }
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
+
 
 }

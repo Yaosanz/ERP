@@ -46,7 +46,7 @@ class DepartemenResource extends Resource
                                 ->helperText('Jelaskan secara singkat tentang departemen ini terkait tugas dan tanggung jawabnya.')
                                 ->placeholder('Masukkan deskripsi departemen'),
                         ])
-                        ->columnSpan(1) // Span only 1 column
+                        ->columnSpan(1) 
                         ->columns(1),
 
                     // Column 2: Divisions Info

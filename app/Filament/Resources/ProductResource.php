@@ -45,7 +45,8 @@ class ProductResource extends Resource
                         ->maxLength(10)
                         ->minLength(3)
                         ->numeric()
-                        ->prefix('Rp.'),
+                        ->prefix('Rp.')
+                        ->helperText('Contoh: 20000000 = Rp. 20.000.000'),
                     Forms\Components\TextInput::make('stock')
                         ->label('Stok Barang')
                         ->numeric()
@@ -100,6 +101,9 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
                     ->prefix('Rp.')
+                    ->formatStateUsing(function ($state) {
+                        return 'Rp. ' . number_format($state, 0, ',', '.');
+                    })
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock')

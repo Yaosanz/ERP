@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('postal_code')->nullable();
             $table->string('position')->nullable();
-            $table->string('division')->nullable();
+            $table->foreignId('divisions_id')->nullable()->constrained('divisions')->cascadeOnDelete();
             $table->integer('salary');
             $table->date('hire_date')->nullable();
-            $table->foreignId('departement_id')->constrained('departments')->cascadeOnDelete();
+            $table->foreignId('departments_id')->nullable()->constrained('departments')->cascadeOnDelete();
             $table->timestamps();
         });
     }

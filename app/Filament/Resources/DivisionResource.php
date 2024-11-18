@@ -3,15 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\DivisionResource\Pages;
-use App\Filament\Resources\DivisionResource\RelationManagers;
 use App\Models\Division;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class DivisionResource extends Resource
 {
@@ -19,56 +15,75 @@ class DivisionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    protected static ?string $navigationGroup = 'Management';
+
+    public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('division_name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('department_id')
-                    ->required()
-                    ->relationship('department', 'name')
-                    ->placeholder('Select Department'),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('division_name')
+                            ->label('Nama Divisi')
+                            ->placeholder('Masukkan Nama Divisi')
+                            ->required()
+                            ->maxLength(255)
+                            ->hint('Gunakan nama yang jelas dan mudah dipahami.')
+                            ->autofocus()
+                            ->helperText('Ex: IT, HR, Marketing, etc.'),
+
+                        Forms\Components\Select::make('department_id')
+                            ->label('Departemen')
+                            ->relationship('department', 'name')
+                            ->placeholder('Pilih Departemen')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->helperText('Pilih departemen yang terkait dengan divisi ini.'),
+                    ]),
+
+                Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi')
+                    ->placeholder('Opsional : Masukkan deskripsi divisi')
+                    ->rows(4)
+                    ->columnSpan('full')
+                    ->helperText('Gunakan deskripsi untuk memberikan informasi tambahan tentang divisi ini.'),
             ]);
     }
 
-    public static function table(Table $table): Table
+    public static function table(Tables\Table $table): Tables\Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('division_name')
+                    ->label('Nama Divisi')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('department_id')
-                    ->numeric()
-                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('department.name')
+                    ->label('Departemen')
+                    ->sortable()
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diubah Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
