@@ -22,7 +22,7 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static ?string $navigationIcon = 'carbon-product';
+    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
     protected static ?string $navigationGroup = "Transaksi";
     protected static ?string $navigationLabel = 'Pembayaran Produk';
     protected static ?int $navigationSort = 4;

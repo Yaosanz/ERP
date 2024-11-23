@@ -14,9 +14,9 @@ class Employee extends Model
         'email',
         'gender',
         'address',
-        'province',
-        'city',
-        'country',
+        'province_id',
+        'city_id',     
+        'country_id',  
         'postal_code',
         'position',
         'salary',
@@ -40,5 +40,21 @@ class Employee extends Model
         return $this->belongsTo(Division::class, 'divisions_id'); 
     }
 
+    // Relationship with country
+    public function country()
+    {
+        return $this->belongsTo(Countries::class, 'country_id');
+    }
 
+    // Relationship with province
+    public function province()
+    {
+        return $this->belongsTo(Provinces::class, 'province_id');
+    }
+
+    // Relationship with city
+    public function city()
+    {
+        return $this->belongsTo(Cities::class, 'city_id');
+    }
 }

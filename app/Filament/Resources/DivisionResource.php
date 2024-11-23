@@ -11,11 +11,13 @@ use Filament\Tables;
 
 class DivisionResource extends Resource
 {
-    protected static ?string $model = Division::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Management';
+    protected static ?string $navigationGroup = 'Manajemen'; 
+
+    protected static ?string $navigationLabel = 'Kelola Divisi';
+
+    protected static ?string $navigationParentItem = 'Kelola Departemen'; 
 
     public static function form(Forms\Form $form): Forms\Form
     {
@@ -32,7 +34,7 @@ class DivisionResource extends Resource
                             ->autofocus()
                             ->helperText('Ex: IT, HR, Marketing, etc.'),
 
-                        Forms\Components\Select::make('department_id')
+                        Forms\Components\Select::make('departments_id')
                             ->label('Departemen')
                             ->relationship('department', 'name')
                             ->placeholder('Pilih Departemen')

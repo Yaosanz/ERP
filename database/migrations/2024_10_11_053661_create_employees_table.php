@@ -14,9 +14,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->enum('gender', ['Male', 'Female', 'Other']);
             $table->string('address')->nullable();
-            $table->string('province')->nullable();
-            $table->string('city')->nullable();
-            $table->string('country')->nullable();
+            $table->foreignId('province_id')->nullable()->constrained('provinces')->cascadeOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete();
+            $table->foreignId('country_id')->nullable()->constrained('countries')->cascadeOnDelete();
             $table->string('postal_code')->nullable();
             $table->string('position')->nullable();
             $table->foreignId('divisions_id')->nullable()->constrained('divisions')->cascadeOnDelete();

@@ -17,7 +17,7 @@ class EmployeePaymentResource extends Resource
 {
     protected static ?string $model = EmployeePayment::class;
 
-    protected static ?string $navigationIcon = 'clarity-employee-line';
+    protected static ?string $navigationIcon = 'tabler-user-dollar';
     protected static ?string $navigationGroup = "Transaksi";
     protected static ?string $navigationLabel = 'Gaji Karyawan';
     protected static ?int $navigationSort = 3;

@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 
     public function department()
     {
-        return $this->belongsTo(Departement::class);
+        return $this->belongsTo(Departement::class, 'departments_id'); 
     }
     public function employees()
     {
