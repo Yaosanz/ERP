@@ -11,8 +11,6 @@ use Filament\Tables;
 
 class DivisionResource extends Resource
 {
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
     protected static ?string $navigationGroup = 'Manajemen'; 
 
     protected static ?string $navigationLabel = 'Kelola Divisi';
