@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 class WidgetExpenseChart extends ChartWidget
 {
     use InteractsWithPageFilters;
-
+    protected static ?int $sort = 2;
     protected static ?string $heading = 'Pengeluaran';
 
     protected function getData(): array

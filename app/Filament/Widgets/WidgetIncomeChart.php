@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 class WidgetIncomeChart extends ChartWidget
 {
     use InteractsWithPageFilters;
-
+    protected static ?int $sort = 1;
     protected static ?string $heading = 'Pemasukan';
 
     protected function getData(): array

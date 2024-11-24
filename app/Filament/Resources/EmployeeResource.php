@@ -3,7 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmployeeResource\Pages;
+use App\Models\Departement;
+use App\Models\Division;
 use App\Models\Employee;
+use App\Models\Provinces;
+use App\Models\Cities;  
+use App\Models\Countries;  
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -15,7 +20,7 @@ class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationIcon = 'clarity-employee-group-line';
     protected static ?string $navigationGroup = "Manajemen";
     protected static ?string $navigationLabel = 'Kelola Karyawan';
     protected static ?int $navigationSort = 3;
@@ -31,33 +36,62 @@ class EmployeeResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Karyawan')
                             ->required(),
+
                         Forms\Components\TextInput::make('email')
                             ->label('Email')
                             ->email()
-                            ->unique(Employee::class, 'email')
-                            ->required(),
+                            ->unique(Employee::class, 'email'),
+
                         Forms\Components\Select::make('gender')
                             ->label('Jenis Kelamin')
+                            ->placeholder('Pilih')
                             ->options([
                                 'Male' => 'Male',
                                 'Female' => 'Female',
                                 'Other' => 'Other',
                             ])
-                            ->nullable(),
+                            ->required(),
+
                         Forms\Components\TextInput::make('position')
                             ->label('Posisi')
-                            ->required(),
-                        Forms\Components\TextInput::make('division')
-                            ->label('Divisi')
                             ->nullable(),
+
+                        Forms\Components\Select::make('departments_id')
+                            ->label('Departemen')
+                            ->placeholder('Pilih Departemen')
+                            ->options(Departement::all()->pluck('name', 'id')->toArray())
+                            ->reactive()
+                            ->required(),
+
+                        Forms\Components\Select::make('divisions_id')
+                            ->label('Divisi')
+                            ->placeholder('Pilih Divisi')
+                            ->options(function (callable $get) {
+                                $departmentId = $get('departments_id');
+                                
+                                if (!$departmentId) {
+                                    return [];
+                                }
+                                
+                                return Division::where('departments_id', $departmentId)
+                                                ->pluck('division_name', 'id')
+                                                ->toArray();
+                            })
+                            ->reactive()
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
+
                         Forms\Components\TextInput::make('salary')
                             ->label('Gaji')
                             ->numeric()
-                            ->required(),
+                            ->prefix('Rp.'),
+
                         Forms\Components\DatePicker::make('hire_date')
                             ->label('Tanggal Bergabung')
-                            ->required(),
-                    ])->columns(2),  
+                            ->nullable(),
+                    ])
+                    ->columns(2),
 
                 Section::make('Detail Alamat')
                     ->description('Isi detail alamat karyawan di bawah ini.')
@@ -65,21 +99,64 @@ class EmployeeResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('address')
                             ->label('Alamat')
-                            ->placeholder('Jl. Contoh No. 123 RT 01 RW 02 Kel. Contoh Kec. Contoh Kab. Contoh')
-                            ->nullable(),
+                            ->placeholder('Alamat Lengkap')
+                            ->required(),
+                        Forms\Components\Select::make('country_id')
+                            ->label('Negara')
+                            ->relationship('country', 'name')
+                            ->placeholder('Pilih Negara')
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set) {
+                                $set('province_id', null);  
+                                $set('city_id', null);
+                            }),
+
+                        Forms\Components\Select::make('province_id')
+                            ->label('Provinsi')
+                            ->relationship('province', 'name')
+                            ->placeholder('Pilih Provinsi')
+                            ->required()
+                            ->reactive()
+                            ->searchable()
+                            ->preload()
+                            ->afterStateUpdated(function (callable $set) {
+                                $set('city_id', null);  
+                            })
+                            ->options(function (callable $get) {
+                                $countryId = $get('country_id');
+                                if (!$countryId) {
+                                    return [];
+                                }
+                                return Provinces::where('country_id', $countryId)
+                                                ->pluck('name', 'id')
+                                                ->toArray();
+                            }),
+
+                        Forms\Components\Select::make('city_id')
+                            ->label('Kota')
+                            ->relationship('city', 'name')
+                            ->placeholder('Pilih Kota')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->options(function (callable $get) {
+                                $provinceId = $get('province_id');
+                                if (!$provinceId) {
+                                    return [];
+                                }
+                                return Cities::where('province_id', $provinceId)
+                                           ->pluck('name', 'id')
+                                           ->toArray();
+                            }),
+
                         Forms\Components\TextInput::make('postal_code')
                             ->label('Kode Pos')
-                            ->nullable(),
-                        Forms\Components\TextInput::make('province')
-                            ->label('Provinsi')
-                            ->nullable(),
-                        Forms\Components\TextInput::make('city')
-                            ->label('Kota')
-                            ->nullable(),
-                        Forms\Components\TextInput::make('country')
-                            ->label('Negara')
-                            ->nullable(),
-                    ])->columns(2),
+                            ->placeholder('Kode Pos')
+                            ->numeric()
+                            ->required(),
+                    ])
+                    ->columns(2),
             ]);
     }
 
@@ -99,14 +176,20 @@ class EmployeeResource extends Resource
                     ->label('Posisi')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('division')
+                Tables\Columns\TextColumn::make('department.name')
+                    ->label('Departemen')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('division.division_name')
                     ->label('Divisi')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('salary')
                     ->label('Gaji')
-                    ->prefix('Rp.')
+                    ->formatStateUsing(function ($state) {
+                        return 'Rp. ' . number_format($state, 0, ',', '.');
+                    })
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('hire_date')

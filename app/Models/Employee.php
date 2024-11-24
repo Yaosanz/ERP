@@ -14,18 +14,47 @@ class Employee extends Model
         'email',
         'gender',
         'address',
-        'province',
-        'city',
-        'country',
+        'province_id',
+        'city_id',     
+        'country_id',  
         'postal_code',
         'position',
-        'division',
         'salary',
         'hire_date',
+        'departments_id',
+        'divisions_id',
     ];
 
     public function payments()
     {
         return $this->hasMany(EmployeePayment::class);
+    }
+    
+    public function department()
+    {
+        return $this->belongsTo(Departement::class, 'departments_id'); 
+    }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'divisions_id'); 
+    }
+
+    // Relationship with country
+    public function country()
+    {
+        return $this->belongsTo(Countries::class, 'country_id');
+    }
+
+    // Relationship with province
+    public function province()
+    {
+        return $this->belongsTo(Provinces::class, 'province_id');
+    }
+
+    // Relationship with city
+    public function city()
+    {
+        return $this->belongsTo(Cities::class, 'city_id');
     }
 }

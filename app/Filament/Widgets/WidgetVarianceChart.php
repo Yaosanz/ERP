@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 class WidgetVarianceChart extends ChartWidget
 {
     use InteractsWithPageFilters;
-
+    protected static ?int $sort = 3;
     protected static ?string $heading = 'Selisih dari Pemasukan dan Pengeluaran';
     protected static string $color = 'info';
 

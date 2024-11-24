@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\TransactionResource\Widgets;
+namespace App\Filament\Resources\EmployeePaymentResource\Widgets;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class TransactionStatsWidget extends BaseWidget
+class EmployeePaymentStatsWdiget extends BaseWidget
 {
     protected static ?string $pollingInterval = null;
     protected static bool $isLazy = false;
