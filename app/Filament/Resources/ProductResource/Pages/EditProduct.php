@@ -8,6 +8,7 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditProduct extends EditRecord
 {
+    protected static ?string $title = 'Edit Data Produk';
     protected static string $resource = ProductResource::class;
     protected function afterSave(): void
     {

@@ -8,12 +8,15 @@
         "php": "^8.2",
         "codeat3/blade-carbon-icons": "^2.29",
         "codeat3/blade-clarity-icons": "^1.9",
+        "eightynine/filament-advanced-widgets": "^3.0",
+        "eightynine/filament-reports": "^3.0",
         "filament/filament": "^3.2",
         "filament/notifications": "^3.0",
         "filament/spatie-laravel-tags-plugin": "^3.2",
         "flowframe/laravel-trend": "^0.2.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "malzariey/filament-daterangepicker-filter": "^3.1",
         "ryangjchandler/blade-tabler-icons": "^2.3"
     },
     "require-dev": {
@@ -70,4 +73,5 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
+    
 }

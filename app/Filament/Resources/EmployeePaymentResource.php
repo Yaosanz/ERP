@@ -44,8 +44,8 @@ class EmployeePaymentResource extends Resource
                         Forms\Components\TextInput::make('amount')
                             ->label('Jumlah Pembayaran')
                             ->numeric()
-                            ->disabled()
                             ->prefix('Rp.')
+                            ->readonly()
                             ->required(),
                         Forms\Components\DatePicker::make('payment_date')
                             ->label('Tanggal Pembayaran')
@@ -81,7 +81,6 @@ class EmployeePaymentResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Jumlah Pembayaran')
-                    ->prefix('Rp.')
                     ->formatStateUsing(function ($state) {
                         return 'Rp. ' . number_format($state, 0, ',', '.');
                     })

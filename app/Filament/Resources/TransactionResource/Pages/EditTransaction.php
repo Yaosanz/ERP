@@ -10,6 +10,7 @@ class EditTransaction extends EditRecord
 {
     protected static string $resource = TransactionResource::class;
 
+    protected static ?string $title = 'Edit Transaksi';
     protected function afterSave(): void
     {
         $this->redirect($this->getResource()::getUrl('index'));

@@ -9,7 +9,11 @@ use Filament\Resources\Pages\EditRecord;
 class EditEmployee extends EditRecord
 {
     protected static string $resource = EmployeeResource::class;
-
+    protected static ?string $title = 'Edit Data Karyawan';
+    protected function afterSave(): void
+    {
+        $this->redirect($this->getResource()::getUrl('index'));
+    }
     protected function getHeaderActions(): array
     {
         return [
