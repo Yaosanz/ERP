@@ -50,16 +50,21 @@ class TransactionResource extends Resource
                         ->relationship('product', 'name')
                         ->reactive()
                         ->afterStateUpdated(function (callable $set, $state) {
-                            $product = Product::find($state);
+                            $product = Product:: find($state);
                             $set('price', $product?->price ?? 0); 
                             $set('quantity', 1); 
                             $set('amount', ($product?->price ?? 0) * 1);
                         }),
+                    Forms\Components\TextInput::make('product_name')
+                        ->label('Varian Produk')
+                        ->required()
+                        ->maxLength(50)
+                        ->minLength(3),
 
                     TextInput::make('price')
                         ->label('Harga Produk')
                         ->reactive() 
-                        ->disabled()
+                        ->readonly()
                         ->prefix('Rp.'),
 
                     Forms\Components\TextInput::make('quantity')
@@ -80,15 +85,31 @@ class TransactionResource extends Resource
                         ->numeric()
                         ->reactive()
                         ->required()
-                        ->disabled(),
-
-                    MarkdownEditor::make('description')->columnSpan('full')
-                        ->label('Deskripsi Transaksi')
-                        ->maxLength(255)
-                        ->minLength(3)
+                        ->readonly(),
+                    Forms\Components\DatePicker::make('date_transaction')
+                        ->label('Tanggal Pembayaran')
+                        ->required(),
                 ])
                 ->columnSpan(1)
                 ->columns(2),
+            Section::make('Status Transaksi')
+                ->collapsible()
+                ->schema([
+                    Forms\Components\Select::make('status')
+                        ->label('Status')
+                        ->required()
+                        ->options([
+                            'Paid' => 'Paid',
+                            'Unpaid' => 'Unpaid',
+                            'Pending' => 'Pending',
+                            'Cancelled' => 'Cancelled',
+                        ]),
+                    MarkdownEditor::make('description')->columnSpan('full')
+                        ->label('Deskripsi Transaksi')
+                        ->maxLength(255)
+                        ->minLength(3),
+                ])
+                ->columnSpan(1),
             Section::make('Bukti Transaksi')
                 ->collapsible()
                 ->schema([
@@ -108,12 +129,7 @@ public static function table(Table $table): Table
         ->columns([
             Tables\Columns\ImageColumn::make('category.image')
                 ->label('Kategori'),
-            Tables\Columns\TextColumn::make('category.name')
-                ->label('Nama Transaksi')
-                ->sortable()
-                ->toggleable()
-                ->searchable(),
-            Tables\Columns\IconColumn::make('category.is_expense')
+                Tables\Columns\IconColumn::make('category.is_expense')
                 ->label('Tipe')
                 ->boolean()
                 ->sortable()
@@ -123,6 +139,11 @@ public static function table(Table $table): Table
                 ->falseIcon('heroicon-o-arrow-down-circle')
                 ->trueColor('danger')
                 ->falseColor('success'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Transaksi')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
             Tables\Columns\TextColumn::make('product.name')
                 ->label('Produk')
                 ->sortable()

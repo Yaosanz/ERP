@@ -23,10 +23,8 @@ class DepartemenResource extends Resource
 {
     return $form
         ->schema([
-            // Create a layout with two columns
-            Forms\Components\Grid::make(2) // Define a 2-column grid
+            Forms\Components\Grid::make(2)
                 ->schema([
-                    // Column 1: Department Info (name, description)
                     Forms\Components\Section::make('Informasi Departemen')
                         ->description('Silahkan isi form berikut untuk menambahkan departemen baru.')
                         ->collapsible()

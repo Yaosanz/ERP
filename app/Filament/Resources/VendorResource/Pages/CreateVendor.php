@@ -8,5 +8,10 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateVendor extends CreateRecord
 {
+    protected static ?string $title = 'Buat Data Vendor';
     protected static string $resource = VendorResource::class;
+    protected function afterSave(): void
+    {
+        $this->redirect($this->getResource()::getUrl('index'));
+    }
 }

@@ -100,7 +100,6 @@ class ProductResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
-                    ->prefix('Rp.')
                     ->formatStateUsing(function ($state) {
                         return 'Rp. ' . number_format($state, 0, ',', '.');
                     })
