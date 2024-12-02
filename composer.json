@@ -17,6 +17,7 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "malzariey/filament-daterangepicker-filter": "^3.1",
+        "rupadana/filament-api-service": "^3.3",
         "ryangjchandler/blade-tabler-icons": "^2.3"
     },
     "require-dev": {
