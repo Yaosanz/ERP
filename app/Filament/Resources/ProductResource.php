@@ -6,15 +6,15 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
-use Doctrine\DBAL\Schema\Column;
 use Filament\Forms;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Validation\ValidationException;
+use Filament\Notifications\Notification;
 
 class ProductResource extends Resource
 {
@@ -163,5 +163,22 @@ class ProductResource extends Resource
             $product->stock -= $transaction->quantity;
             $product->save();
         }
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if ($data['stock'] <= 0) {
+            Notification::make()
+                ->title('Stok Invalid')
+                ->danger()
+                ->body('Stok harus lebih besar dari 0.')
+                ->send();
+
+            throw ValidationException::withMessages([
+                'stock' => 'Stok tidak valid.',
+            ]);
+        }
+
+        return $data;
     }
 }
