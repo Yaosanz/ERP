@@ -19,6 +19,7 @@ class ListHandler extends Handlers
         $query = static::getEloquentQuery();
 
         $blogs = QueryBuilder::for($query)
+            ->allowedFields(['id', 'title', 'content', 'published'])
             ->get();
 
         return response()->json($blogs);
