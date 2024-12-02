@@ -3,15 +3,14 @@
 namespace App\Filament\Resources\EmployeePaymentResource\Pages;
 
 use App\Filament\Resources\EmployeePaymentResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateEmployeePayment extends CreateRecord
 {
     protected static string $resource = EmployeePaymentResource::class;
     protected static ?string $title = 'Buat Data Karyawan';
-    protected function afterSave(): void
+    protected function getRedirectUrl(): string
     {
-        $this->redirect($this->getResource()::getUrl('index'));
+        return static::$resource::getUrl('index');
     }
 }

@@ -14,7 +14,9 @@ class ListCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->label('Tambah Data Bisnis Model')
+            ->Icon('heroicon-o-plus-circle'),
         ];
     }
 }
