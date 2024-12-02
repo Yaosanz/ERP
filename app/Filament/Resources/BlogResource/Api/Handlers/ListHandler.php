@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 
 class ListHandler extends Handlers
 {
+
+    public static bool $public = true;
     public static string | null $uri = '/blogs';
     public static string | null $resource = BlogResource::class;
 
