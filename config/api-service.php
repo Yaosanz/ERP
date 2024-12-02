@@ -11,7 +11,7 @@ return [
     ],
     'models' => [
         'token' => [
-            'enable_policy' => true,
+            'enable_policy' => false,
         ],
     ],
     'route' => [
