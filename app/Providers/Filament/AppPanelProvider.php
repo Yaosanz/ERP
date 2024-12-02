@@ -18,6 +18,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use EightyNine\Reports\ReportsPlugin;
+use Rupadana\ApiService\ApiServicePlugin;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -51,7 +52,8 @@ class AppPanelProvider extends PanelProvider
                 // Widgets\FilamentInfoWidget::class,
             ])
             ->plugins([
-                ReportsPlugin::make()
+                ReportsPlugin::make(),
+                ApiServicePlugin::make(),
             ])
             ->unsavedChangesAlerts()
             ->middleware([
