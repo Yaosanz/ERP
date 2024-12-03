@@ -6,20 +6,19 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
-use Doctrine\DBAL\Schema\Column;
 use Filament\Forms;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Validation\ValidationException;
+use Filament\Notifications\Notification;
 
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
-
     protected static ?string $navigationIcon = 'carbon-ibm-data-product-exchange';
     protected static ?string $navigationGroup = "Manajemen";
     protected static ?string $navigationLabel = 'Kelola Produk';
@@ -46,7 +45,8 @@ class ProductResource extends Resource
                         ->maxLength(10)
                         ->minLength(3)
                         ->numeric()
-                        ->prefix('Rp.'),
+                        ->prefix('Rp.')
+                        ->helperText('Contoh: 20000000 = Rp. 20.000.000'),
                     Forms\Components\TextInput::make('stock')
                         ->label('Stok Barang')
                         ->numeric()
@@ -60,6 +60,7 @@ class ProductResource extends Resource
                             'Pieces' => 'Pieces',
                             'Kilograms' => 'Kilograms',
                             'Centimeters' => 'Centimeters',
+                            'Meter' => 'Meter',
                             'Unit' => 'Unit',
                             'Projects' => 'Projects',
                             'Monthly' => 'Monthly',
@@ -99,7 +100,9 @@ class ProductResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
-                    ->prefix('Rp.')
+                    ->formatStateUsing(function ($state) {
+                        return 'Rp. ' . number_format($state, 0, ',', '.');
+                    })
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock')
@@ -160,5 +163,22 @@ class ProductResource extends Resource
             $product->stock -= $transaction->quantity;
             $product->save();
         }
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if ($data['stock'] <= 0) {
+            Notification::make()
+                ->title('Stok Invalid')
+                ->danger()
+                ->body('Stok harus lebih besar dari 0.')
+                ->send();
+
+            throw ValidationException::withMessages([
+                'stock' => 'Stok tidak valid.',
+            ]);
+        }
+
+        return $data;
     }
 }

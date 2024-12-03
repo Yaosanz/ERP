@@ -22,7 +22,7 @@ class BlogResource extends Resource
     protected static ?string $navigationGroup = "Konten Blog";
     protected static ?string $navigationLabel = 'Kelola Blog';
     protected static ?int $navigationSort = 4;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'carbon-blog';
 
     public static function form(Form $form): Form
     {
@@ -35,18 +35,18 @@ class BlogResource extends Resource
                         Forms\Components\TextInput::make('title')
                             ->label('Judul')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $operation, string $state, Forms\Set $set) {
-                                if($operation === 'edit'){
-                                    return;
+                            ->afterStateUpdated(function (?string $state, Forms\Set $set) {
+                                if (!empty($state)) {
+                                    $set('slug', Str::slug($state));
                                 }
-                                $set('slug', Str::slug($state));
                             })
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(100),
                         Forms\Components\TextInput::make('slug')
-                            ->label('Slug')
+                            ->label('URL Slug')
                             ->required()
-                            ->maxLength(255),
+                            ->disabled()
+                            ->maxLength(100),
                         MarkdownEditor::make('content')
                             ->label('Deskripsi Konten')
                             ->required()
@@ -74,7 +74,7 @@ class BlogResource extends Resource
                     ->collapsible()
                     ->schema([
                         Forms\Components\TagsInput::make('tags')
-                            ->label('Tags')
+                            ->label('Penanda')
                             ->placeholder('Masukkan tag')
                             ->required(),
                         Checkbox::make('published')
@@ -96,17 +96,15 @@ class BlogResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label('URL Slug')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('thumbnail')
-                    ->label('Thumbnail'),
                 Tables\Columns\TextColumn::make('tags')
-                    ->label('Tags')
+                    ->label('Penanda')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\CheckboxColumn::make('published')
-                    ->label('Diterbitkan'),
+                    ->label('Dipublikasikan'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')
                     ->dateTime()

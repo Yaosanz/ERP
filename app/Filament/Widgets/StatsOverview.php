@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\EmployeePayment;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -23,36 +24,71 @@ class StatsOverview extends BaseWidget
 
         $endDate = !is_null($this->filters['endDate'] ?? null) 
             ? Carbon::parse($this->filters['endDate']) 
-            : now();
+            : null;
 
         $income = Transaction::incomes()
-            ->where('status', 'Paid') 
+            ->where('status', 'Paid')
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->sum('amount');
 
         $outcome = Transaction::expenses()
-            ->where('status', 'Paid') 
+            ->where('status', 'Paid')
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->sum('amount');
+
+        $employeePayments = EmployeePayment::where('status', 'Paid')
+            ->whereBetween('payment_date', [$startDate, $endDate]) 
+            ->sum('amount');
+
+        $profit = $income - $outcome - $employeePayments;
 
         return [
             Stat::make('Total Pemasukan', 'Rp. ' . number_format($income))
                 ->description('Peningkatan')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-                ->color('success'),
+                ->chart($this->generateDynamicChart($income, true))
+                ->color($income >= 0 ? 'success' : 'danger'),
 
             Stat::make('Total Pengeluaran', 'Rp. ' . number_format($outcome))
                 ->description('Penurunan')
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
-                ->chart([17, 16, 14, 15, 14, 13, 12])
-                ->color('danger'),
+                ->chart($this->generateDynamicChart($outcome, false))
+                ->color($outcome >= 0 ? 'danger' : 'success'),
 
-            Stat::make('Selisih', 'Rp. ' . number_format($income - $outcome))
-                ->description('Laba Perusahaan')
+            Stat::make('Total Pembayaran Karyawan', 'Rp. ' . number_format($employeePayments))
+                ->description('Pembayaran Bulan Ini')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->chart([15, 4, 10, 2, 12, 4, 12])
-                ->color('success'),
+                ->chart($this->generateDynamicChart($employeePayments, true))
+                ->color('info'),
+
+            Stat::make('Selisih', 'Rp. ' . number_format($profit))
+                ->description('Laba Perusahaan')
+                ->descriptionIcon($profit >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
+                ->chart($this->generateDynamicChart($profit, $profit >= 0))
+                ->color($profit >= 0 ? 'success' : 'danger'),
         ];
     }
+
+    protected function generateDynamicChart($amount, $isPositive)
+    {
+        $chartValues = $isPositive ? [
+            $amount * 0.1,  
+            $amount * 0.25, 
+            $amount * 0.5,  
+            $amount * 0.75, 
+            $amount * 1.0,  
+            $amount * 1.5, 
+            $amount * 2.0, 
+        ] : [
+            $amount * 2.0,  
+            $amount * 1.5,  
+            $amount * 1.0,  
+            $amount * 0.75, 
+            $amount * 0.5,  
+            $amount * 0.25, 
+            $amount * 0.1, 
+        ];
+    
+        return $chartValues;
+    }    
 }

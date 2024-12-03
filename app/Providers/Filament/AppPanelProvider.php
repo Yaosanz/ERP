@@ -17,6 +17,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use EightyNine\Reports\ReportsPlugin;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -46,8 +47,11 @@ class AppPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                // Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
+            ])
+            ->plugins([
+                ReportsPlugin::make()
             ])
             ->unsavedChangesAlerts()
             ->middleware([

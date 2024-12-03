@@ -11,12 +11,15 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListTransactions extends ListRecords
 {
+    protected static ?string $title = 'Halaman Transaksi';
     protected static string $resource = TransactionResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->label('Tambah Data Transaksi')
+            ->Icon('heroicon-o-plus-circle'),
         ];
     }
 
