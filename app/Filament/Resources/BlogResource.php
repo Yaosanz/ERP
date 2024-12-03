@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -77,14 +78,16 @@ class BlogResource extends Resource
                             ->label('Penanda')
                             ->placeholder('Masukkan tag')
                             ->required(),
-                        Checkbox::make('published')
-                            ->label('Terbitkan')
+                        ToggleButtons::make('published')
+                            ->label('Publikasikan')
+                            ->boolean()
+                            ->grouped()
                             ->default(false)
                             ->required(),
                     ])
                     ->columnSpan(1),
             ])
-            ->columns(2); 
+            ->columns(3); 
     }
 
     public static function table(Table $table): Table

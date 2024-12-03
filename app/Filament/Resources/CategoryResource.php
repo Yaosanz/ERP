@@ -6,10 +6,16 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -29,7 +35,7 @@ class CategoryResource extends Resource
                 ->description('Isi informasi kategori kebutuhan berikut.')
                 ->collapsible()
                 ->schema([
-                    Forms\Components\Select::make('name')
+                    Select::make('name')
                         ->label('Kategori Kebutuhan')
                         ->required()
                         ->options([
@@ -53,22 +59,35 @@ class CategoryResource extends Resource
                 ->columnSpan(1),
 
             Section::make('Bisnis Model')
-                ->description('Matikan jika kategori ini adalah pemasukan Atau Nyalakan jika kategori ini adalah pengeluaran.')
+                ->description('Tentukan apakah kategori kebutuhan ini merupakan pemasukan atau pengeluaran.')
                 ->collapsible()
                 ->schema([
-                    Forms\Components\Toggle::make('is_expense')
+                    ToggleButtons::make('is_expense')
                         ->label('Pemasukan Atau Pengeluaran')
                         ->default(false)
+                        ->grouped()
+                        ->options([
+                            '0' => 'Pemasukan',
+                            '1' => 'Pengeuaran',
+                        ])
+                        ->icons([
+                            '0' => 'heroicon-o-arrow-trending-down',
+                            '1' => 'heroicon-o-arrow-trending-up',
+                        ])
+                        ->colors([
+                            '0' => 'success',
+                            '1' => 'warning',
+                        ])
                         ->required(),
                 ])
                 ->columnSpan(1),
 
            
             Section::make('Logo Kategori')
-                ->description('Cari logo sesuai dengan kebutuhan melalui situs yang bernama Flaticon atau Freepik.')
+                ->description('Cari logo sesuai dengan kebutuhan melalui situs yang bernama Flaticon atau Freepik. (Opsional)')
                 ->collapsible()
                 ->schema([
-                    Forms\Components\FileUpload::make('image')
+                    FileUpload::make('image')
                         ->label('Logo Kategori')
                         ->image()
                 ])
@@ -83,32 +102,32 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
+                ImageColumn::make('image')
                 ->label('Logo'),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Kategori Kebutuhan')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_expense')
-                    ->label('Tipe')
+                IconColumn::make('is_expense')
+                    ->label('Bisnis Model')
                     ->boolean()
                     ->trueIcon('heroicon-o-arrow-up-circle')
                     ->falseIcon('heroicon-o-arrow-down-circle')
                     ->trueColor('danger')
                     ->falseColor('success'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Tanggal Diubah')
                     ->dateTime()
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->label('Tanggal Dihapus')
                     ->dateTime()
                     ->sortable()
