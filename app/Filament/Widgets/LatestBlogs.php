@@ -15,9 +15,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 class LatestBlogs extends BaseWidget
 {
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 5;
     protected int | string | array $columnSpan = 'full';
-
+    protected static ?string $title = 'Kelola Blog';
+    protected static bool $isLazy = false;
     public function table(Table $table): Table
     {
         return $table
@@ -37,6 +38,7 @@ class LatestBlogs extends BaseWidget
                 Tables\Columns\TextColumn::make('content')
                     ->label('Deskripsi Konten')
                     ->limit(50)
+                    ->placeholder('No description.')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('tags')

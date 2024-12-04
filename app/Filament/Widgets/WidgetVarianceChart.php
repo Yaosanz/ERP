@@ -13,8 +13,9 @@ class WidgetVarianceChart extends ChartWidget
 {
     use InteractsWithPageFilters;
     protected static ?int $sort = 3;
-    protected static ?string $heading = 'Selisih dari Pemasukan dan Pengeluaran';
+    protected static ?string $heading = 'Selisih Keuntungan';
     protected static string $color = 'info';
+    protected static bool $isLazy = false;
 
     protected function getData(): array
     {
@@ -47,7 +48,7 @@ class WidgetVarianceChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Cumulative Selisih Pemasukan dan Pengeluaran',
+                    'label' => 'Cumulative Selisih Bersih',
                     'data' => $varianceData->values()->toArray(),
                     'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
                     'borderColor' => 'rgba(75, 192, 192, 1)',
