@@ -14,6 +14,7 @@ class WidgetExpenseChart extends ChartWidget
     use InteractsWithPageFilters;
     protected static ?int $sort = 2;
     protected static ?string $heading = 'Pengeluaran';
+    protected static bool $isLazy = false;
 
     protected function getData(): array
     {

@@ -13,7 +13,7 @@ class WidgetIncomeChart extends ChartWidget
     use InteractsWithPageFilters;
     protected static ?int $sort = 1;
     protected static ?string $heading = 'Pemasukan';
-
+    protected static bool $isLazy = false;
     protected function getData(): array
     {
         if (empty($this->filters['startDate'] ?? null) || empty($this->filters['endDate'] ?? null)) {
