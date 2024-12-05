@@ -64,9 +64,12 @@ class BlogResource extends Resource
                         Forms\Components\FileUpload::make('thumbnail')
                             ->label('Thumbnail')
                             ->disk('public')
-                            ->directory('thumbnail')
+                            ->directory('thumbnails')
                             ->image()
-                            ->required(),
+                            ->imageEditor()
+                            ->downloadable()
+                            ->previewable()
+                            ,
                     ])
                     ->columnSpan(1),
 
