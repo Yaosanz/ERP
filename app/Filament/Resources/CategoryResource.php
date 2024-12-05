@@ -89,7 +89,12 @@ class CategoryResource extends Resource
                 ->schema([
                     FileUpload::make('image')
                         ->label('Logo Kategori')
-                        ->image()
+                        ->disk('public')
+                            ->directory('logos')
+                            ->image()
+                            ->imageEditor()
+                            ->downloadable()
+                            ->previewable()
                 ])
                 ->columnSpan(1),
         ])

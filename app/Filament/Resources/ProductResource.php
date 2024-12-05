@@ -77,7 +77,12 @@ class ProductResource extends Resource
                 ->schema([
                     Forms\Components\FileUpload::make('image')
                         ->label('Gambar Produk')
-                        ->image(),
+                        ->disk('public')
+                            ->directory('products')
+                            ->image()
+                            ->imageEditor()
+                            ->downloadable()
+                            ->previewable(),
                 ])->columnSpan(1),
             ])->columns(2);
     }
