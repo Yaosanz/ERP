@@ -115,8 +115,12 @@ class TransactionResource extends Resource
                 ->schema([
                     Forms\Components\FileUpload::make('image')
                         ->label('Unggah Bukti')
-                        ->image()
-                        ->visibility('private'),
+                        ->disk('public')
+                            ->directory('transactions')
+                            ->image()
+                            ->imageEditor()
+                            ->downloadable()
+                            ->previewable(),
                 ])
                 ->columnSpan(1),
         ])
