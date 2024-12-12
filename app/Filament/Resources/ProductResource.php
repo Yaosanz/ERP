@@ -35,11 +35,14 @@ class ProductResource extends Resource
                         ->label('Nama Produk') 
                         ->maxLength(20) 
                         ->minLength(3) 
-                        ->required(),
+                        ->required()
+                        ->helperText('Masukkan nama produk yang ingin ditambahkan.'),
                     Forms\Components\Select::make('category_id')
-                        ->label('Kategori')
+                        ->label('Bisnis Model')
                         ->relationship('category', 'name')
-                        ->required(),
+                        ->required()
+                        ->searchable()
+                        ->helperText('Pilih Bisnis Model yang sesuai untuk produk ini.'),
                     Forms\Components\TextInput::make('price')
                         ->label('Harga')
                         ->maxLength(10)
@@ -52,10 +55,13 @@ class ProductResource extends Resource
                         ->numeric()
                         ->maxLength(7)
                         ->minLength(1)
-                        ->default(1),
+                        ->default(1)
+                        ->required()
+                        ->helperText('Masukkan jumlah stok barang yang tersedia.'),
                     Forms\Components\Select::make('unit')
                         ->label('Satuan Produk Atau Periode')
                         ->required()
+                        ->searchable()
                         ->options([
                             'Pieces' => 'Pieces',
                             'Kilograms' => 'Kilograms',
@@ -63,18 +69,18 @@ class ProductResource extends Resource
                             'Meter' => 'Meter',
                             'Unit' => 'Unit',
                             'Projects' => 'Projects',
-                            'Monthly' => 'Monthly',
-                            'Quarterly' => 'Quarterly',
-                            'Yearly' => 'Yearly',
-                        ]),
+                        ])
+                        ->helperText('Pilih satuan produk atau periode yang sesuai.'),
+                ])->columnSpan(1)->columns(2),
+                Section::make('Deskripsi dan Gambar Produk')
+                ->collapsible()
+                ->description('Deskripsikan produk yang ingin ditambahkan.')
+                ->schema([
                     MarkdownEditor::make('description')->columnSpan('full')
                         ->label('Deskripsi Produk')
                         ->maxLength(255) 
-                        ->minLength(3),
-                ])->columnSpan(1)->columns(2),
-                Section::make('Gambar')
-                ->collapsible()
-                ->schema([
+                        ->minLength(3)
+                        ->helperText('Deskripsikan produk yang ingin ditambahkan.'),
                     Forms\Components\FileUpload::make('image')
                         ->label('Gambar Produk')
                         ->disk('public')
@@ -82,8 +88,10 @@ class ProductResource extends Resource
                             ->image()
                             ->imageEditor()
                             ->downloadable()
-                            ->previewable(),
-                ])->columnSpan(1),
+                            ->previewable()
+                            ->helpertext('Sesuaikan gambar produk dengan nama produk.'),
+                ])
+                ->columnSpan(1),
             ])->columns(2);
     }
 
@@ -102,7 +110,8 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->getStateUsing(fn ($record) => $record->description ?: 'Tidak ada deskripsi'),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
                     ->formatStateUsing(function ($state) {
@@ -111,12 +120,12 @@ class ProductResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock')
-                    ->label('Stok Barang')
+                    ->label('Stok')
                     ->numeric()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('unit')
-                    ->label('Satuan Produk / Periode')
+                    ->label('Satuan Produk')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -134,9 +143,9 @@ class ProductResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category_id')
-                    ->label('Kategori')
+                    ->label('Model Bisnis')
                     ->options(fn () => Category::pluck('name', 'id'))
-                    ->placeholder('Semua Kategori'),
+                    ->placeholder('Semua Model Bisnis'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

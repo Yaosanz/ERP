@@ -14,6 +14,8 @@ use Filament\Tables;
 use App\Filament\Exports\TransactionExporter;
 use App\Filament\Imports\TransactionImporter;
 use Filament\Tables\Actions\ExportBulkAction;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
@@ -22,7 +24,7 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static ?string $navigationIcon = 'carbon-product';
     protected static ?string $navigationGroup = "Transaksi";
     protected static ?string $navigationLabel = 'Pembayaran Produk';
     protected static ?int $navigationSort = 4;
@@ -42,8 +44,11 @@ class TransactionResource extends Resource
                         ->minLength(3),
                         
                     Forms\Components\Select::make('category_id')
-                        ->label('Kategori')
-                        ->relationship('category', 'name'),
+                        ->label('Model Bisnis')
+                        ->relationship('category', 'name')
+                        ->required()
+                        ->helperText('Pilih Model Bisnis yang sesuai untuk transaksi ini.')
+                        ->searchable(),
 
                     Forms\Components\Select::make('product_id')
                         ->label('Produk')
@@ -56,7 +61,7 @@ class TransactionResource extends Resource
                             $set('amount', ($product?->price ?? 0) * 1);
                         }),
                     Forms\Components\TextInput::make('product_name')
-                        ->label('Varian Produk')
+                        ->label('Label Produk')
                         ->required()
                         ->maxLength(50)
                         ->minLength(3),
@@ -131,19 +136,23 @@ public static function table(Table $table): Table
 {
     return $table
         ->columns([
-            Tables\Columns\ImageColumn::make('category.image')
-                ->label('Kategori'),
-                Tables\Columns\IconColumn::make('category.is_expense')
-                ->label('Tipe')
-                ->boolean()
-                ->sortable()
-                ->toggleable()
-                ->searchable()
-                ->trueIcon('heroicon-o-arrow-up-circle')
-                ->falseIcon('heroicon-o-arrow-down-circle')
-                ->trueColor('danger')
-                ->falseColor('success'),
-                Tables\Columns\TextColumn::make('name')
+            ImageColumn::make('category.image')
+                    ->label('Logo'),
+            Tables\Columns\IconColumn::make('category.is_expense')
+                    ->label('Indikator')
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable()
+                    ->trueIcon('heroicon-o-arrow-up-circle')
+                    ->falseIcon('heroicon-o-arrow-down-circle')
+                    ->trueColor('danger')
+                    ->falseColor('success'),
+            TextColumn::make('category.name')
+                    ->label('Model Bisnis')
+                    ->sortable()
+                    ->searchable(),
+            Tables\Columns\TextColumn::make('name')
                     ->label('Nama Transaksi')
                     ->sortable()
                     ->toggleable()
@@ -174,7 +183,8 @@ public static function table(Table $table): Table
                 ->label('Deskripsi')
                 ->searchable()
                 ->toggleable()
-                ->sortable(),
+                ->sortable()
+                ->getStateUsing(fn ($record) => $record->description ?: 'Tidak ada deskripsi'),
             Tables\Columns\TextColumn::make('status')
                 ->label('Status')
                 ->searchable()

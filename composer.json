@@ -8,6 +8,7 @@
         "php": "^8.2",
         "codeat3/blade-carbon-icons": "^2.29",
         "codeat3/blade-clarity-icons": "^1.9",
+        "codeat3/blade-iconpark": "^1.6",
         "eightynine/filament-advanced-widgets": "^3.0",
         "eightynine/filament-reports": "^3.0",
         "filament/filament": "^3.2",

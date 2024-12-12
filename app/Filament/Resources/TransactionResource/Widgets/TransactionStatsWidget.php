@@ -4,6 +4,8 @@ namespace App\Filament\Resources\TransactionResource\Widgets;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
+use App\Models\TransactionsExpense;
+use App\Models\TransactionsIncomes;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -17,11 +19,14 @@ class TransactionStatsWidget extends BaseWidget
         $income = Transaction::incomes()
             ->where('status', 'Paid')
             ->sum('amount');
-
+        
+        $income += TransactionsIncomes::where('status', 'Paid')->sum('amount');
+        
         $outcome = Transaction::expenses()
             ->where('status', 'Paid')
             ->sum('amount');
-
+        $outcome += TransactionsExpense::where('status', 'Paid')->sum('amount');
+        
         $employeePayments = EmployeePayment::where('status', 'Paid')->sum('amount');
 
        

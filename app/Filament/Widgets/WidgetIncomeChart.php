@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Transaction;
+use App\Models\TransactionsIncomes;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -11,13 +12,14 @@ use Illuminate\Support\Collection;
 class WidgetIncomeChart extends ChartWidget
 {
     use InteractsWithPageFilters;
+    
     protected static ?int $sort = 1;
     protected static ?string $heading = 'Pemasukan';
     protected static bool $isLazy = false;
+
     protected function getData(): array
     {
         if (empty($this->filters['startDate'] ?? null) || empty($this->filters['endDate'] ?? null)) {
-          
             return [
                 'datasets' => [
                     [
@@ -50,12 +52,18 @@ class WidgetIncomeChart extends ChartWidget
             ];
         }
 
-    
         $startDate = Carbon::parse($this->filters['startDate']);
         $endDate = Carbon::parse($this->filters['endDate']);
 
-        $incomes = Transaction::incomes()
+        // Fetch incomes from Transaction model and TransactionsIncomes model
+        $transactions = Transaction::incomes()
             ->whereBetween('date_transaction', [$startDate, $endDate])
+            ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        $transactionsIncomes = TransactionsIncomes::whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
             ->groupBy('date')
             ->orderBy('date')
@@ -66,15 +74,26 @@ class WidgetIncomeChart extends ChartWidget
             return Carbon::parse($date)->format('Y-m-d');
         })->toArray();
 
-        $data = $this->getDailyTotals($incomes, $dates);
+        $dataTransactions = $this->getDailyTotals($transactions, $dates);
+        $dataTransactionsIncomes = $this->getDailyTotals($transactionsIncomes, $dates);
 
+        // Combine both datasets for chart
         return [
             'datasets' => [
                 [
-                    'label' => 'Pemasukan per Hari',
-                    'data' => $data,
+                    'label' => 'Transaction (Products)',
+                    'data' => $dataTransactions,
                     'backgroundColor' => 'rgba(75, 192, 192, 0.2)',  
                     'borderColor' => 'rgba(75, 192, 192, 1)',       
+                    'borderWidth' => 2,  
+                    'tension' => 0.6,    
+                    'fill' => true,      
+                ],
+                [
+                    'label' => 'Transactions (Others)',
+                    'data' => $dataTransactionsIncomes,
+                    'backgroundColor' => 'rgba(153, 102, 255, 0.2)',  
+                    'borderColor' => 'rgba(153, 102, 255, 1)',       
                     'borderWidth' => 2,  
                     'tension' => 0.6,    
                     'fill' => true,      

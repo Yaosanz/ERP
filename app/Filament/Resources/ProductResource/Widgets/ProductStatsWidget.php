@@ -21,10 +21,9 @@ class ProductStatsWidget extends BaseWidget
 
         return [
             Stat::make('Total Produk Tersisa', $totalStock)
-                ->description('Penurunan')
-                ->descriptionIcon('heroicon-m-arrow-trending-down')
+                ->description('Stabil')
                 ->chart([60,50,40,30,20,10,5])
-                ->color('danger'),
+                ->color('gray'),
                     
                 Stat::make('Total Produk Terjual', $totalSold)
                 ->description('Peningkatan')

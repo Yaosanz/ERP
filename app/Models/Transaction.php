@@ -69,18 +69,16 @@ class Transaction extends Model
 
 
     public function scopeExpenses($query)
-{
+    {
     return $query->whereHas('category', function ($query) {
         $query->where('is_expense', true);
     })->where('status', 'paid');
-}
+    }
 
-public function scopeIncomes($query)
-{
+    public function scopeIncomes($query)
+    {
     return $query->whereHas('category', function ($query) {
         $query->where('is_expense', false);
     })->where('status', 'paid'); 
-}
-
-
+    }
 }

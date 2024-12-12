@@ -19,7 +19,7 @@ class EmployeePaymentResource extends Resource
 
     protected static ?string $navigationIcon = 'tabler-user-dollar';
     protected static ?string $navigationGroup = "Transaksi";
-    protected static ?string $navigationLabel = 'Gaji Karyawan';
+    protected static ?string $navigationLabel = 'Pembayaran Gaji Karyawan';
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
@@ -96,7 +96,7 @@ class EmployeePaymentResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status Pembayaran')
+                    ->label('Status')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
