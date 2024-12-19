@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Vendor;  // Import Model Vendor
 use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Components\MarkdownEditor;
@@ -23,75 +24,131 @@ class ProductResource extends Resource
     protected static ?string $navigationGroup = "Manajemen";
     protected static ?string $navigationLabel = 'Kelola Produk';
     protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Section::make('Tambahkan Produk')
-                ->description('Silahkan isi form berikut untuk menambahkan produk baru.')
-                ->collapsible()
-                ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->label('Nama Produk') 
-                        ->maxLength(20) 
-                        ->minLength(3) 
-                        ->required()
-                        ->helperText('Masukkan nama produk yang ingin ditambahkan.'),
-                    Forms\Components\Select::make('category_id')
-                        ->label('Bisnis Model')
-                        ->relationship('category', 'name')
-                        ->required()
-                        ->searchable()
-                        ->helperText('Pilih Bisnis Model yang sesuai untuk produk ini.'),
-                    Forms\Components\TextInput::make('price')
-                        ->label('Harga')
-                        ->maxLength(10)
-                        ->minLength(3)
-                        ->numeric()
-                        ->prefix('Rp.')
-                        ->helperText('Contoh: 20000000 = Rp. 20.000.000'),
-                    Forms\Components\TextInput::make('stock')
-                        ->label('Stok Barang')
-                        ->numeric()
-                        ->maxLength(7)
-                        ->minLength(1)
-                        ->default(1)
-                        ->required()
-                        ->helperText('Masukkan jumlah stok barang yang tersedia.'),
-                    Forms\Components\Select::make('unit')
-                        ->label('Satuan Produk Atau Periode')
-                        ->required()
-                        ->searchable()
-                        ->options([
-                            'Pieces' => 'Pieces',
-                            'Kilograms' => 'Kilograms',
-                            'Centimeters' => 'Centimeters',
-                            'Meter' => 'Meter',
-                            'Unit' => 'Unit',
-                            'Projects' => 'Projects',
-                        ])
-                        ->helperText('Pilih satuan produk atau periode yang sesuai.'),
-                ])->columnSpan(1)->columns(2),
+                    ->description('Silahkan isi form berikut untuk menambahkan produk baru.')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nama Produk')
+                            ->maxLength(20)
+                            ->minLength(3)
+                            ->required()
+                            ->helperText('Masukkan nama produk yang ingin ditambahkan.'),
+                        Forms\Components\Select::make('category_id')
+                            ->label('Bisnis Model')
+                            ->relationship('category', 'name')
+                            ->required()
+                            ->preload()
+                            ->searchable()
+                            ->helperText('Pilih Bisnis Model yang sesuai untuk produk ini.'),
+                        Forms\Components\Select::make('vendor_id') 
+                            ->label('Vendor')
+                            ->relationship('vendor', 'name') 
+                            ->searchable()
+                            ->preload()
+                            ->helperText('Pilih vendor yang menyediakan produk ini.'),
+                        Forms\Components\TextInput::make('price')
+                            ->label('Harga')
+                            ->maxLength(10)
+                            ->minLength(3)
+                            ->numeric()
+                            ->prefix('Rp.')
+                            ->helperText('Contoh: 20000000 = Rp. 20.000.000'),
+                        Forms\Components\TextInput::make('stock')
+                            ->label('Stok Barang')
+                            ->numeric()
+                            ->maxLength(7)
+                            ->minLength(1)
+                            ->default(1)
+                            ->required()
+                            ->helperText('Masukkan jumlah stok barang yang tersedia.'),
+                        Forms\Components\Select::make('unit')
+                            ->label('Satuan Produk')
+                            ->required()
+                            ->searchable()
+                            ->options([
+                                'Milligrams' => 'Milligrams (mg)',
+                                'Grams' => 'Grams (g)',
+                                'Kilograms' => 'Kilograms (kg)',
+                                'Metric Tons' => 'Metric Tons (mt)',
+
+                                'Millimeters' => 'Millimeters (mm)',
+                                'Centimeters' => 'Centimeters (cm)',
+                                'Meters' => 'Meters (m)',
+                                'Kilometers' => 'Kilometers (km)',
+                                'Inches' => 'Inches (in)',
+                                'Feet' => 'Feet (ft)',
+                                'Yards' => 'Yards (yd)',
+                                'Miles' => 'Miles (mi)',
+
+                                'Milliliters' => 'Milliliters (ml)',
+                                'Liters' => 'Liters (l)',
+                                'Cubic Centimeters' => 'Cubic Centimeters (cc)',
+                                'Cubic Meters' => 'Cubic Meters (m³)',
+
+                                'Pieces' => 'Pieces (pcs)',
+                                'Dozens' => 'Dozens (dz)',
+                                'Packs' => 'Packs (pack)',
+                                'Cases' => 'Cases (case)',
+                                'Cartons' => 'Cartons (ctn)',
+                                'Pallets' => 'Pallets (plt)',
+
+                                'Square Centimeters' => 'Square Centimeters (cm²)',
+                                'Square Meters' => 'Square Meters (m²)',
+                                'Square Kilometers' => 'Square Kilometers (km²)',
+                                'Acres' => 'Acres (ac)',
+                                'Hectares' => 'Hectares (ha)',
+
+                                'Seconds' => 'Seconds (s)',
+                                'Minutes' => 'Minutes (min)',
+                                'Hours' => 'Hours (hr)',
+                                'Days' => 'Days',
+                                'Weeks' => 'Weeks',
+                                'Months' => 'Months',
+                                'Years' => 'Years',
+
+                                'Joules' => 'Joules (J)',
+                                'Kilojoules' => 'Kilojoules (kJ)',
+                                'Calories' => 'Calories (cal)',
+                                'Kilocalories' => 'Kilocalories (kcal)',
+
+                                'Rolls' => 'Rolls',
+                                'Tubes' => 'Tubes',
+                                'Sheets' => 'Sheets',
+                                'Bottles' => 'Bottles',
+                                'Cans' => 'Cans',
+                                'Bags' => 'Bags',
+                                'Boxes' => 'Boxes',
+                                'Bundles' => 'Bundles',
+                            ])
+                            ->helperText('Pilih satuan produk yang sesuai.'),
+                    ])->columnSpan(1)->columns(2),
+
                 Section::make('Deskripsi dan Gambar Produk')
-                ->collapsible()
-                ->description('Deskripsikan produk yang ingin ditambahkan.')
-                ->schema([
-                    MarkdownEditor::make('description')->columnSpan('full')
-                        ->label('Deskripsi Produk')
-                        ->maxLength(255) 
-                        ->minLength(3)
-                        ->helperText('Deskripsikan produk yang ingin ditambahkan.'),
-                    Forms\Components\FileUpload::make('image')
-                        ->label('Gambar Produk')
-                        ->disk('public')
+                    ->collapsible()
+                    ->description('Deskripsikan produk yang ingin ditambahkan.')
+                    ->schema([
+                        MarkdownEditor::make('description')->columnSpan('full')
+                            ->label('Deskripsi Produk')
+                            ->maxLength(255)
+                            ->minLength(3)
+                            ->helperText('Deskripsikan produk yang ingin ditambahkan.'),
+                        Forms\Components\FileUpload::make('image')
+                            ->label('Gambar Produk')
+                            ->disk('public')
                             ->directory('products')
                             ->image()
                             ->imageEditor()
                             ->downloadable()
                             ->previewable()
                             ->helpertext('Sesuaikan gambar produk dengan nama produk.'),
-                ])
-                ->columnSpan(1),
+                    ])
+                    ->columnSpan(1),
             ])->columns(2);
     }
 
@@ -104,7 +161,11 @@ class ProductResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('category.name')
-                    ->label('Kategori')
+                    ->label('Model Bisnis')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('vendor.name') 
+                    ->label('Vendor')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')

@@ -6,25 +6,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TransactionsExpense extends Model
+class TransactionPayments extends Model
 {
+    //
     use HasFactory;
-
+    protected $table = 'transactions_payments';
     protected $fillable = [
         'name',
         'category_id',
+        'amount',
         'date_transaction',
         'description',
-        'amount',
         'status',
         'image',
+        'quantity',           
+        'vehicle_image',      
+        'vehicle_plate',      
+        'region',             
     ];
-    
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
-
     public function scopeExpenses($query)
     {
     return $query->whereHas('category', function ($query) {
@@ -39,3 +42,4 @@ class TransactionsExpense extends Model
     })->where('status', 'paid'); 
     }
 }
+

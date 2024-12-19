@@ -17,7 +17,7 @@ class DepartemenResource extends Resource
     protected static ?string $navigationIcon = 'clarity-organization-line';
     protected static ?string $navigationGroup = "Manajemen";
     protected static ?string $navigationLabel = 'Kelola Departemen';
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
 {

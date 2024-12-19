@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Transaction;
+use App\Models\TransactionPayments;
 use App\Models\TransactionsIncomes;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
@@ -63,7 +64,7 @@ class WidgetIncomeChart extends ChartWidget
             ->orderBy('date')
             ->get();
 
-        $transactionsIncomes = TransactionsIncomes::whereBetween('date_transaction', [$startDate, $endDate])
+        $transactionsIncomes = TransactionPayments::whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
             ->groupBy('date')
             ->orderBy('date')
@@ -90,7 +91,7 @@ class WidgetIncomeChart extends ChartWidget
                     'fill' => true,      
                 ],
                 [
-                    'label' => 'Transactions (Others)',
+                    'label' => 'Transactions (General)',
                     'data' => $dataTransactionsIncomes,
                     'backgroundColor' => 'rgba(153, 102, 255, 0.2)',  
                     'borderColor' => 'rgba(153, 102, 255, 1)',       

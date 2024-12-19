@@ -3,9 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
-use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ToggleButtons;
@@ -16,9 +14,9 @@ use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class CategoryResource extends Resource
 {
@@ -26,7 +24,7 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'carbon-model-alt';
     protected static ?string $navigationGroup = "Model Bisnis";
-    protected static ?string $navigationLabel = 'Kelola Bisnis Model';
+    protected static ?string $navigationLabel = 'Kelola Model Bisnis';
     public static function form(Form $form): Form
 {
     return $form
@@ -112,14 +110,16 @@ class CategoryResource extends Resource
                 TextColumn::make('name')
                     ->label('Kategori Kebutuhan')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_expense')
                     ->label('Bisnis Model')
                     ->boolean()
                     ->trueIcon('heroicon-o-arrow-up-circle')
                     ->falseIcon('heroicon-o-arrow-down-circle')
                     ->trueColor('danger')
-                    ->falseColor('success'),
+                    ->falseColor('success')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')
                     ->dateTime()
@@ -140,7 +140,10 @@ class CategoryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('category_id')
+                    ->label('Model Bisnis')
+                    ->options(fn () => Category::pluck('name', 'id'))
+                    ->placeholder('Semua Model Bisnis'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

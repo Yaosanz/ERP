@@ -22,6 +22,7 @@ class VendorResource extends Resource
     protected static ?string $navigationIcon = 'clarity-employee-group-line';
     protected static ?string $navigationGroup = "Manajemen";
     protected static ?string $navigationLabel = 'Kelola Vendor';
+    protected static ?string $navigationParentItem = 'Kelola Produk';
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
@@ -39,13 +40,20 @@ class VendorResource extends Resource
                         Forms\Components\TextInput::make('email')
                             ->label('Email')
                             ->email()
-                            ->unique(Vendor::class, 'email')
                             ->nullable(),
 
                         Forms\Components\TextInput::make('number_phone')
                             ->label('Nomor Telepon')
                             ->tel()
                             ->nullable(),
+                        Forms\Components\Select::make('status')
+                            ->label('Status Vendor')
+                            ->options([
+                                'active' => 'Aktif',
+                                'inactive' => 'Tidak Aktif',
+                            ])
+                            ->required()
+                            ->default('active'),
                     ])
                     ->columns(2),
 
@@ -62,7 +70,6 @@ class VendorResource extends Resource
                             ->label('Negara')
                             ->relationship('country', 'name')
                             ->placeholder('Pilih Negara')
-                            ->required()
                             ->reactive()
                             ->afterStateUpdated(function (callable $set) {
                                 $set('province_id', null);  
@@ -73,7 +80,6 @@ class VendorResource extends Resource
                             ->label('Provinsi')
                             ->relationship('province', 'name')
                             ->placeholder('Pilih Provinsi')
-                            ->required()
                             ->reactive()
                             ->searchable()
                             ->preload()
@@ -94,7 +100,6 @@ class VendorResource extends Resource
                             ->label('Kota')
                             ->relationship('city', 'name')
                             ->placeholder('Pilih Kota')
-                            ->required()
                             ->searchable()
                             ->preload()
                             ->options(function (callable $get) {

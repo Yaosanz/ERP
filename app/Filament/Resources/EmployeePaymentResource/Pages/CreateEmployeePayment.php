@@ -8,7 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateEmployeePayment extends CreateRecord
 {
     protected static string $resource = EmployeePaymentResource::class;
-    protected static ?string $title = 'Buat Data Pembayaran Gaji Karyawan';
+    protected static ?string $title = 'Buat Data Transaksi';
     protected function getRedirectUrl(): string
     {
         return static::$resource::getUrl('index');

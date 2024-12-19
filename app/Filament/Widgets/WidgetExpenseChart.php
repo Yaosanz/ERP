@@ -4,7 +4,9 @@ namespace App\Filament\Widgets;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
+use App\Models\TransactionPayments;
 use App\Models\TransactionsExpense;
+use App\Models\TransactionsIncomes;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -57,7 +59,7 @@ class WidgetExpenseChart extends ChartWidget
         $endDate = Carbon::parse($this->filters['endDate']);
 
         // Fetch expenses data from both Transaction and EmployeePayment models
-        $expenses = TransactionsExpense::expenses()
+        $expenses = TransactionPayments::expenses()
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
             ->groupBy('date')
@@ -83,19 +85,19 @@ class WidgetExpenseChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Pengeluaran Umum',
+                    'label' => 'Transactions (Others)',
                     'data' => $generalExpenseData,
-                    'backgroundColor' => 'rgba(255, 99, 132, 0.2)',  // General Expense Color
+                    'backgroundColor' => 'rgba(255, 99, 132, 0.2)', 
                     'borderColor' => 'rgba(255, 99, 132, 1)',
                     'borderWidth' => 2,
                     'tension' => 0.6,
                     'fill' => true,
                 ],
                 [
-                    'label' => 'Pengeluaran Gaji Karyawan',
+                    'label' => 'Transactions (Gaji)',
                     'data' => $salaryExpenseData,
-                    'backgroundColor' => 'rgba(54, 162, 235, 0.2)',  // Salary Expense Color
-                    'borderColor' => 'rgba(54, 162, 235, 1)',
+                    'backgroundColor' => 'rgba(220, 53, 69, 0.2)', 
+                    'borderColor' => 'rgba(220, 53, 69, 1)',
                     'borderWidth' => 2,
                     'tension' => 0.6,
                     'fill' => true,

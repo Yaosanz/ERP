@@ -17,8 +17,15 @@ class Vendor extends Model
         'province_id',
         'city_id',
         'country_id',
+        'status',
     ];
 
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+    
     public function country()
     {
         return $this->belongsTo(Countries::class, 'country_id');

@@ -14,8 +14,7 @@ class TransactionExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')
-                ->label('ID'),
+            ExportColumn::make('id')->label('ID'),
             ExportColumn::make('name'),
             ExportColumn::make('category.name'),
             ExportColumn::make('product.name'),

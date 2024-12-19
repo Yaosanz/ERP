@@ -6,6 +6,7 @@ use App\Models\Transaction;
 use App\Models\TransactionsIncomes;
 use App\Models\TransactionsExpense;
 use App\Models\EmployeePayment;
+use App\Models\TransactionPayments;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -21,7 +22,7 @@ class WidgetVarianceChart extends ChartWidget
 
     protected function getData(): array
     {
-        // Cek jika filter tanggal tidak ada
+       
         if (empty($this->filters['startDate']) || empty($this->filters['endDate'])) {
             return [
                 'datasets' => [
@@ -67,7 +68,8 @@ class WidgetVarianceChart extends ChartWidget
         $endDate = Carbon::parse($this->filters['endDate']);
 
         // Mengambil data transaksi dari model Transaction
-        $transactions = Transaction::whereBetween('date_transaction', [$startDate, $endDate])
+        $transactions = Transaction::incomes()
+            ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
             ->groupBy('date')
             ->orderBy('date')
@@ -77,8 +79,9 @@ class WidgetVarianceChart extends ChartWidget
                 return $item;
             });
 
-        // Mengambil data transaksi dari model TransactionsIncomes
-        $transactionsIncomes = TransactionsIncomes::whereBetween('date_transaction', [$startDate, $endDate])
+        // Mengambil data transaksi dari model TransactionsPayments
+        $transactionsIncomes = TransactionPayments::incomes()
+            ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
             ->groupBy('date')
             ->orderBy('date')
@@ -88,8 +91,8 @@ class WidgetVarianceChart extends ChartWidget
                 return $item;
             });
 
-        // Mengambil data pengeluaran dari model TransactionsExpense
-        $expenses = TransactionsExpense::expenses()
+        // Mengambil data pengeluaran dari model TransactionsPayments
+        $expenses = TransactionPayments::expenses()
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
             ->groupBy('date')
@@ -132,9 +135,9 @@ class WidgetVarianceChart extends ChartWidget
             $transactionIncome = $transactionsIncomeData[$index] ?? 0;
             $expense = $expenseData[$index] ?? 0;
             $salaryExpense = $salaryExpenseData[$index] ?? 0;
-
+            $totalExpense = $expense + $salaryExpense;
             // Perhitungan varians untuk hari ini
-            $dailyVariance = $income + $transactionIncome - ($expense + $salaryExpense);
+            $dailyVariance = $income + $transactionIncome - $totalExpense;
             $runningTotal += $dailyVariance; // Mengakumulasi varians
 
             // Menyimpan hasil perhitungan varians kumulatif
@@ -145,10 +148,10 @@ class WidgetVarianceChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Profits (Incomes - Expenses)',
+                    'label' => 'Profits (Keuntungan)',
                     'data' => $varianceData,
-                    'backgroundColor' => 'rgba(76, 175, 80, 0.2)', // Green with transparency
-                    'borderColor' => 'rgba(76, 175, 80, 1)', // Green border
+                    'backgroundColor' => 'rgba(76, 175, 80, 0.2)',
+                    'borderColor' => 'rgba(76, 175, 80, 1)',
                     'borderWidth' => 2,
                     'tension' => 0.6,
                     'fill' => true,
@@ -210,6 +213,6 @@ class WidgetVarianceChart extends ChartWidget
      */
     protected function getType(): string
     {
-        return 'line'; // Menyajikan chart dalam bentuk line chart
+        return 'line'; 
     }
 }

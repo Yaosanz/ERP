@@ -15,6 +15,7 @@ class EmployeePayment extends Model
         'payment_date',
         'payment_method',
         'status',
+        'image',
     ];
 
     public function employee()

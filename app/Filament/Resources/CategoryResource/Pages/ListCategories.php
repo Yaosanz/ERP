@@ -3,8 +3,11 @@
 namespace App\Filament\Resources\CategoryResource\Pages;
 
 use App\Filament\Resources\CategoryResource;
+use App\Filament\Resources\CategoryResource\Widgets\StatsCategory;
 use Filament\Actions;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListCategories extends ListRecords
 {
@@ -15,8 +18,31 @@ class ListCategories extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->label('Tambah Data Bisnis Model')
+            ->label('Tambah Data')
             ->Icon('heroicon-o-plus-circle'),
         ];
     }
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            StatsCategory::class,
+        ];
+    }
+    public function getTabs(): array
+    {
+        return [
+            'All' => Tab::make('All'),
+    
+            'Pemasukan' => Tab::make('Pemasukan')
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('is_expense', false); // `false` untuk Pemasukan
+                }),
+    
+            'Pengeluaran' => Tab::make('Pengeluaran')
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('is_expense', true); // `true` untuk Pengeluaran
+                }),
+        ];
+    }
+    
 }

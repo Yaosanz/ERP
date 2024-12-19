@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('payment_date');
             $table->string('payment_method');
             $table->string('status')->default('Unpaid');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

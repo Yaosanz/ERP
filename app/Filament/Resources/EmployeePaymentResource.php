@@ -11,7 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Livewire\Component;
+
 
 class EmployeePaymentResource extends Resource
 {
@@ -19,8 +19,9 @@ class EmployeePaymentResource extends Resource
 
     protected static ?string $navigationIcon = 'tabler-user-dollar';
     protected static ?string $navigationGroup = "Transaksi";
-    protected static ?string $navigationLabel = 'Pembayaran Gaji Karyawan';
-    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationLabel = 'Pembayaran Gaji';
+    protected static ?int $navigationSort = 4;
+
 
     public static function form(Form $form): Form
     {
@@ -28,13 +29,17 @@ class EmployeePaymentResource extends Resource
             ->schema([
                 Section::make('Pembayaran Karyawan')
                     ->description('Silahkan isi form berikut untuk menambahkan pembayaran karyawan.')
-                    ->collapsible()
+                    ->aside()
                     ->schema([
                         Forms\Components\Select::make('employee_id')
                             ->label('Nama Karyawan')
-                            ->relationship('employee', 'name')
+                            ->placeholder('Pilih nama karyawan')
+                            ->helperText('Pilih karyawan yang akan menerima pembayaran.')
+                            ->relationship('employee', 'name') // Menghubungkan dengan model Employee
                             ->required()
                             ->reactive()
+                            ->searchable()
+                            ->preload()
                             ->afterStateUpdated(function (callable $set, $state) {
                                 if ($state) {
                                     $employee = Employee::find($state);
@@ -43,32 +48,51 @@ class EmployeePaymentResource extends Resource
                             }),
                         Forms\Components\TextInput::make('amount')
                             ->label('Jumlah Pembayaran')
+                            ->placeholder('Masukkan jumlah pembayaran')
+                            ->helperText('Jumlah pembayaran akan otomatis diisi berdasarkan gaji karyawan.')
                             ->numeric()
                             ->prefix('Rp.')
                             ->readonly()
                             ->required(),
                         Forms\Components\DatePicker::make('payment_date')
                             ->label('Tanggal Pembayaran')
+                            ->placeholder('Pilih tanggal pembayaran')
+                            ->helperText('Tanggal pembayaran yang dilakukan.')
                             ->required(),
                         Forms\Components\Select::make('payment_method')
                             ->label('Metode Pembayaran')
+                            ->placeholder('Pilih metode pembayaran')
+                            ->helperText('Pilih metode pembayaran yang digunakan.')
                             ->required()
                             ->options([
-                                'Cash on Hand' => 'Cash on Hand',
-                                'Bank Transfer' => 'Bank Transfer',
-                                'Mobile Payment' => 'Mobile Payment',
+                                'Cash on Hand' => 'Tunai',
+                                'Bank Transfer' => 'Transfer Bank',
+                                'Mobile Payment' => 'Pembayaran Digital',
                             ]),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label('Status Pembayaran')
+                            ->placeholder('Pilih status pembayaran')
+                            ->helperText('Tentukan status pembayaran saat ini.')
                             ->required()
                             ->options([
-                                'Paid' => 'Paid',
-                                'Unpaid' => 'Unpaid',
-                                'Pending' => 'Pending',
-                                'Cancelled' => 'Cancelled',
-                            ])
-                    ])->columnSpan(1)->columns(2),
-            ])->columns(2);
+                                'Paid' => 'Sudah Dibayar',
+                                'Unpaid' => 'Belum Dibayar',
+                                'Pending' => 'Menunggu',
+                                'Cancelled' => 'Dibatalkan',
+                            ]),
+                    ]),
+
+                Section::make('Bukti Pembayaran')
+                    ->description('Unggah gambar sebagai bukti pembayaran transaksi.')
+                    ->collapsed()
+                    ->schema([
+                        Forms\Components\FileUpload::make('proof_of_payment')
+                            ->label('Unggah Bukti Pembayaran')
+                            ->helperText('Unggah gambar sebagai bukti bahwa pembayaran telah dilakukan.')
+                            ->image()
+                            ->directory('payments/proofs')
+                    ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -96,8 +120,16 @@ class EmployeePaymentResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label('Status Pembayaran')
                     ->sortable()
+                    ->badge()
+                    ->color(fn ($record) => match ($record->status) {
+                        'Paid' => 'success',
+                        'Unpaid' => 'danger',
+                        'Pending' => 'warning',
+                        'Cancelled' => 'danger',
+                        default => 'primary',
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')

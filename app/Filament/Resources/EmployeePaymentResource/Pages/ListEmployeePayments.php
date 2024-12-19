@@ -9,14 +9,14 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListEmployeePayments extends ListRecords
 {
-    protected static ?string $title = 'Halaman Pembayaran Gaji Karyawan';
+    protected static ?string $title = 'Halaman Transaksi Gaji Karyawan';
     protected static string $resource = EmployeePaymentResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make()
-            ->label('Tambah Data Pembayaran')
+            ->label('Tambah Data Transaksi')
             ->Icon('heroicon-o-plus-circle'),
         ];
         

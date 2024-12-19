@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
+use App\Models\TransactionPayments;
 use App\Models\TransactionsExpense;
 use App\Models\TransactionsIncomes;
 use Carbon\Carbon;
@@ -50,16 +51,20 @@ $monthlyValues = collect($allMonths)
             [
                 'label' => 'Keuntungan Bulanan',
                 'data' => $profitValuesWithNull,
-                'backgroundColor' => 'rgba(75, 192, 192, 0.5)',
-                'borderColor' => 'rgba(75, 192, 192, 1)',
-                'borderWidth' => 1,
+                'backgroundColor' => 'rgba(76, 175, 80, 0.2)',
+                'borderColor' => 'rgba(76, 175, 80, 1)',
+                'borderWidth' => 2,
+                'tension' => 0.6,
+                'fill' => true,
             ],
             [
                 'label' => 'Prediksi Bulan Depan (' . $nextMonthLabel . ')',
                 'data' => array_merge(array_fill(0, count($allMonths), null), [$this->predictNextMonthProfit($monthlyProfitData)]),
-                'backgroundColor' => 'rgba(255, 99, 132, 0.5)',
-                'borderColor' => 'rgba(255, 99, 132, 1)',
-                'borderWidth' => 1,
+                'backgroundColor' => 'rgba(255, 215, 0, 0.5)',
+                'borderColor' => 'rgba(255, 215, 0, 1)', 
+                'borderWidth' => 2,
+                'tension' => 0.6,
+                'fill' => true,
             ],
         ],
         'labels' => $allLabels,
@@ -71,13 +76,12 @@ $monthlyValues = collect($allMonths)
 {
     // Ambil total pemasukan bulanan
     $transactionIncomes = $this->getMonthlyTotals(Transaction::incomes(), $startDate, $endDate);
-    $transactionsIncomes = $this->getMonthlyTotals(TransactionsIncomes::incomes(), $startDate, $endDate);
+    $transactionsIncomes = $this->getMonthlyTotals(TransactionPayments::incomes(), $startDate, $endDate);
     $incomes = $this->mergeMonthlyData($transactionIncomes, $transactionsIncomes);
 
-    // Ambil total pengeluaran bulanan
-    $transactionExpenses = $this->getMonthlyTotals(Transaction::expenses(), $startDate, $endDate);
-    $transactionsExpenses = $this->getMonthlyTotals(TransactionsExpense::expenses(), $startDate, $endDate);
-    $expenses = $this->mergeMonthlyData($transactionExpenses, $transactionsExpenses);
+    // Ambil total pengeluaran bulanan;
+    $transactionsExpenses = $this->getMonthlyTotals(TransactionPayments::expenses(), $startDate, $endDate);
+    $expenses = $transactionsExpenses;
 
     // Ambil total pembayaran karyawan bulanan
     $employeePayments = $this->getMonthlyTotals(EmployeePayment::query(), $startDate, $endDate, 'payment_date');

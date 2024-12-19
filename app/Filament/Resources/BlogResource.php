@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BlogResource\Pages;
 use App\Models\Blog;
 use Filament\Forms;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\ToggleButtons;
@@ -13,9 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-
 use Illuminate\Support\Str;
-use function Livewire\on;
 
 class BlogResource extends Resource
 {
@@ -109,8 +106,13 @@ class BlogResource extends Resource
                     ->label('Penanda')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\CheckboxColumn::make('published')
-                    ->label('Dipublikasikan'),
+                Tables\Columns\TextColumn::make('published')
+                    ->label('Dipublikasikan')
+                    ->badge(fn ($record) => $record->published ? 'Publish' : 'Unpublish')
+                    ->sortable()
+                    ->searchable()
+                    ->color(fn ($record) => $record->published ? 'success' : 'danger')
+                    ->formatStateUsing(fn ($state) => $state ? 'Publish' : 'Unpublish'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')
                     ->dateTime()

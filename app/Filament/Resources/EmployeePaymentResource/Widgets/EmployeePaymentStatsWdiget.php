@@ -4,6 +4,7 @@ namespace App\Filament\Resources\EmployeePaymentResource\Widgets;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
+use App\Models\TransactionPayments;
 use App\Models\TransactionsExpense;
 use App\Models\TransactionsIncomes;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -20,7 +21,9 @@ class EmployeePaymentStatsWdiget extends BaseWidget
             ->where('status', 'Paid')
             ->sum('amount');
         
-        $income += TransactionsIncomes::where('status', 'Paid')->sum('amount');
+        $income += TransactionPayments::incomes()
+            ->where('status', 'Paid')
+            ->sum('amount');
         
         $employeePayments = EmployeePayment::where('status', 'Paid')->sum('amount');
 

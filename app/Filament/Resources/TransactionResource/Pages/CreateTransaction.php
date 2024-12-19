@@ -9,8 +9,8 @@ use Filament\Notifications\Notification;
 
 class CreateTransaction extends CreateRecord
 {
-    protected static ?string $title = 'Buat Data Transaksi';
     protected static string $resource = TransactionResource::class;
+    protected static ?string $title = 'Buat Data Transaksi';
 
     /**
      * Redirect ke halaman index setelah data berhasil dibuat.
