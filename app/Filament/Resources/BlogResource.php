@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BlogResource\Pages;
 use App\Models\Blog;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\ToggleButtons;
@@ -61,7 +62,7 @@ class BlogResource extends Resource
                     ->description('Unggah thumbnail blog untuk menarik perhatian pembaca.')
                     ->collapsible()
                     ->schema([
-                        Forms\Components\FileUpload::make('thumbnail')
+                        FileUpload::make('thumbnail')
                             ->label('Thumbnail')
                             ->disk('public')
                             ->directory('blogs')
@@ -70,7 +71,6 @@ class BlogResource extends Resource
                             ->imageEditor()
                             ->downloadable()
                             ->previewable()
-                            ->uploadUrl(route('blogs.upload-thumbnail'))
                             ,
                     ])
                     ->columnSpan(1),
@@ -150,25 +150,6 @@ class BlogResource extends Resource
             // Define relations if needed
         ];
     }
-    public static function routes(Panel $panel): void
-{
-    parent::routes($panel);
-
-    Route::post('/blogs/upload-thumbnail', [self::class, 'uploadThumbnail'])
-        ->name('blogs.upload-thumbnail');
-}
-public static function uploadThumbnail(Request $request)
-{
-    $request->validate([
-        'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
-
-    $path = $request->file('thumbnail')->store('blogs', 'public');
-
-    return response()->json([
-        'url' => asset("storage/$path"),
-    ]);
-}
 
 
     public static function getPages(): array
