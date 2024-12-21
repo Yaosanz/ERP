@@ -13,6 +13,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Filament\Panel;
 
 class BlogResource extends Resource
 {
@@ -67,6 +70,7 @@ class BlogResource extends Resource
                             ->imageEditor()
                             ->downloadable()
                             ->previewable()
+                            ->uploadUrl(route('blogs.upload-thumbnail'))
                             ,
                     ])
                     ->columnSpan(1),
@@ -146,6 +150,26 @@ class BlogResource extends Resource
             // Define relations if needed
         ];
     }
+    public static function routes(Panel $panel): void
+{
+    parent::routes($panel);
+
+    Route::post('/blogs/upload-thumbnail', [self::class, 'uploadThumbnail'])
+        ->name('blogs.upload-thumbnail');
+}
+public static function uploadThumbnail(Request $request)
+{
+    $request->validate([
+        'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $path = $request->file('thumbnail')->store('blogs', 'public');
+
+    return response()->json([
+        'url' => asset("storage/$path"),
+    ]);
+}
+
 
     public static function getPages(): array
     {

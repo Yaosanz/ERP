@@ -110,16 +110,14 @@ class CategoryResource extends Resource
                 TextColumn::make('name')
                     ->label('Kategori Kebutuhan')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
                 IconColumn::make('is_expense')
                     ->label('Bisnis Model')
                     ->boolean()
                     ->trueIcon('heroicon-o-arrow-up-circle')
                     ->falseIcon('heroicon-o-arrow-down-circle')
                     ->trueColor('danger')
-                    ->falseColor('success')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->falseColor('success'),
                 TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')
                     ->dateTime()
