@@ -104,7 +104,7 @@ class Reports extends Report
                             }
                         ),
                         VerticalSpace::make(),
-                    Text::make("Rekapitulasi Transaksi Produk")
+                    Text::make("Rekapitulasi Transaksi General")
                         ->fontXl()
                         ->fontBold()
                         ->primary(),
@@ -116,9 +116,6 @@ class Reports extends Report
                             Body\TextColumn::make("name")
                                 ->label("Transaksi")
                                 ->alignLeft(),
-                            Body\TextColumn::make("quantity")
-                                ->label("Kuantitas")
-                                ->alignCenter(),
                             Body\TextColumn::make("amount")
                                 ->label("Jumlah")
                                 ->alignCenter()
@@ -149,7 +146,7 @@ class Reports extends Report
                                         return $query->whereDate('date_transaction', '<=', $date);
                                     })
                                     ->with('category') 
-                                    ->select('name', 'quantity', 'amount', 'date_transaction');
+                                    ->select('name', 'amount', 'date_transaction');
                     
                                 // Apply expense or income filter if present
                                 if ($isExpense !== null) {
@@ -253,7 +250,7 @@ class Reports extends Report
                         ->sum('amount');
 
                         // Tambahkan total gaji karyawan sebagai bagian dari pengeluaran
-                        $employeePayments = EmployeePayment::query()
+                        $employeePayments = EmployeePayment::where('status', 'Paid')
                         ->whereBetween('payment_date', [$dates[0], $dates[1]])
                         ->sum('amount');
 
@@ -267,7 +264,7 @@ class Reports extends Report
                         $profit = $totalIncomes - $totalExpenses;
 
                         return collect([
-                        ["item" => "Pendapatan", "total" => "Rp. " . number_format($incomes, 0, ',', '.')], 
+                        ["item" => "Pendapatan", "total" => "Rp. " . number_format($totalIncomes, 0, ',', '.')], 
                         ["item" => "Pengeluaran", "total" => "Rp. " . number_format($totalExpenses, 0, ',', '.')], 
                         ["item" => "Keuntungan", "total" => "Rp. " . number_format($profit, 0, ',', '.')], 
                         ]);

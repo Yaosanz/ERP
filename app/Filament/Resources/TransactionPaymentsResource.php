@@ -221,7 +221,6 @@ public static function getPages(): array
     return [
         'index' => Pages\ListTransactionPayments::route('/'),
         'create' => Pages\CreateTransactionPayments::route('/create'),
-        'view' => Pages\ViewTransactionPayments::route('/{record}'),
         'edit' => Pages\EditTransactionPayments::route('/{record}/edit'),
     ];
 }

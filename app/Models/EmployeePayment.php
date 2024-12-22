@@ -26,8 +26,5 @@ class EmployeePayment extends Model
     {
         return $query->where('status', 'paid'); 
     }
-    public function scopeIncomes($query)
-    {
-        return $query->where('status', 'received'); 
-    }
+    
 }
