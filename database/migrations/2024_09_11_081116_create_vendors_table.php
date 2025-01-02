@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('number_phone')->nullable();
             $table->string('email')->nullable()->unique();
+            $table->string('item')->nullable();
             $table->foreignId('province_id')->nullable()->constrained('provinces')->cascadeOnDelete();
             $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete();
             $table->foreignId('country_id')->nullable()->constrained('countries')->cascadeOnDelete();

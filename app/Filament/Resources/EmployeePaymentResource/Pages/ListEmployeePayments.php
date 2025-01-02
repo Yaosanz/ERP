@@ -6,6 +6,8 @@ use App\Filament\Resources\EmployeePaymentResource;
 use App\Filament\Resources\EmployeePaymentResource\Widgets\EmployeePaymentStatsWdiget;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Components\Tab;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListEmployeePayments extends ListRecords
 {
@@ -21,6 +23,29 @@ class ListEmployeePayments extends ListRecords
         ];
         
     }
+
+    public function getTabs(): array
+    {
+        return [
+            'All' => Tab::make('All'),
+
+            'Paid' => Tab::make('Paid')
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('status', 'Paid');
+                }),
+
+            'Unpaid' => Tab::make('Unpaid')
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('status', 'Unpaid');
+                }),
+
+            'Pending' => Tab::make('Pending')
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('status', 'Pending');
+                }),
+        ];
+    }
+
     protected function getHeaderWidgets(): array
     {
         return [

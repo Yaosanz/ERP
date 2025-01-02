@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\TransactionPaymentsExporter;
 use App\Filament\Resources\TransactionPaymentsResource\Pages;
 use App\Models\TransactionPayments;
 use Filament\Forms;
@@ -18,7 +19,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
-
+use Filament\Tables\Actions\ExportAction;
 class TransactionPaymentsResource extends Resource
 {
     protected static ?string $model = TransactionPayments::class;
@@ -200,6 +201,10 @@ public static function table(Tables\Table $table): Tables\Table
                         ->when($data['from'], fn (Builder $query, $date) => $query->where('date_transaction', '>=', $date))
                         ->when($data['to'], fn (Builder $query, $date) => $query->where('date_transaction', '<=', $date));
                 }),
+        ])
+        ->headerActions([
+            ExportAction::make()->exporter(TransactionPaymentsExporter::class)
+            ->label('Export Transaksi')
         ])
         ->actions([
             ViewAction::make(),

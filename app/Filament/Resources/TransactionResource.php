@@ -20,7 +20,6 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\ExportAction;
-use Filament\Tables\Actions\ImportAction;
 
 class TransactionResource extends Resource
 {
@@ -244,9 +243,7 @@ class TransactionResource extends Resource
                 ])
                 ->headerActions([
                     ExportAction::make()->exporter(TransactionExporter::class)
-                    ->label('Export Transaksi'),
-                    ImportAction::make()->importer(TransactionImporter::class)
-                    ->label('Import Transaksi')
+                    ->label('Export Transaksi')
                 ])
                 ->bulkActions([
                     Tables\Actions\BulkActionGroup::make([

@@ -39,19 +39,12 @@ class ProductResource extends Resource
                             ->minLength(3)
                             ->required()
                             ->helperText('Masukkan nama produk yang ingin ditambahkan.'),
-                        Forms\Components\Select::make('category_id')
-                            ->label('Bisnis Model')
-                            ->relationship('category', 'name')
-                            ->required()
-                            ->preload()
-                            ->searchable()
-                            ->helperText('Pilih Bisnis Model yang sesuai untuk produk ini.'),
                         Forms\Components\Select::make('vendor_id') 
                             ->label('Vendor')
                             ->relationship('vendor', 'name') 
                             ->searchable()
                             ->preload()
-                            ->helperText('Pilih vendor yang menyediakan produk ini.'),
+                            ->helperText('Pilih vendor yang menyediakan produk ini (Opsional).'),
                         Forms\Components\TextInput::make('price')
                             ->label('Harga')
                             ->maxLength(10)

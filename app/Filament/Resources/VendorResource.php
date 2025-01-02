@@ -42,6 +42,10 @@ class VendorResource extends Resource
                             ->email()
                             ->nullable(),
 
+                        Forms\Components\TextInput::make('item')
+                            ->label('Produk yang Dijual')
+                            ->nullable(),
+
                         Forms\Components\TextInput::make('number_phone')
                             ->label('Nomor Telepon')
                             ->tel()
