@@ -153,8 +153,10 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('category.image')
-                        ->label('Model Bisnis'),
+                TextColumn::make('category.name')
+                ->label('Model Bisnis')
+                ->sortable()
+                ->searchable(),
                 Tables\Columns\IconColumn::make('category.is_expense')
                         ->label('Indikator')
                         ->boolean()
@@ -165,15 +167,11 @@ class TransactionResource extends Resource
                         ->falseIcon('heroicon-o-arrow-down-circle')
                         ->trueColor('danger')
                         ->falseColor('success'),
-                TextColumn::make('category.name')
-                        ->label('Model Bisnis')
-                        ->sortable()
-                        ->searchable(),
                 TextColumn::make('name')
-                        ->label('Nama Transaksi')
-                        ->sortable()
-                        ->toggleable()
-                        ->searchable(),
+                ->label('Nama Transaksi')
+                ->sortable()
+                ->toggleable()
+                ->searchable(),
                 TextColumn::make('product.name')
                     ->label('Produk')
                     ->sortable()

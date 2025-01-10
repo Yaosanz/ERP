@@ -134,8 +134,10 @@ public static function table(Tables\Table $table): Tables\Table
 {
     return $table
         ->columns([
-            ImageColumn::make('category.image')
-                ->label('Logo'),
+            TextColumn::make('category.name')
+            ->label('Model Bisnis')
+            ->sortable()
+            ->searchable(),
             IconColumn::make('category.is_expense')
                 ->label('Indikator')
                 ->boolean()
@@ -144,11 +146,6 @@ public static function table(Tables\Table $table): Tables\Table
                 ->falseIcon('heroicon-o-arrow-down-circle')
                 ->trueColor('danger')
                 ->falseColor('success'),
-            TextColumn::make('category.name')
-                ->label('Model Bisnis')
-                ->sortable()
-                ->searchable(),
-
             TextColumn::make('name')
                 ->label('Nama Transaksi')
                 ->searchable()

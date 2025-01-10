@@ -41,7 +41,7 @@ class ProductResource extends Resource
                             ->helperText('Masukkan nama produk yang ingin ditambahkan.'),
                         Forms\Components\Select::make('vendor_id') 
                             ->label('Vendor')
-                            ->relationship('vendor', 'name') 
+                            ->relationship('vendor', 'item') 
                             ->searchable()
                             ->preload()
                             ->helperText('Pilih vendor yang menyediakan produk ini (Opsional).'),
@@ -153,11 +153,7 @@ class ProductResource extends Resource
                     ->label('Nama Produk')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('category.name')
-                    ->label('Model Bisnis')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('vendor.name') 
+                Tables\Columns\TextColumn::make('vendor.item') 
                     ->label('Vendor')
                     ->sortable()
                     ->searchable(),
