@@ -36,9 +36,6 @@ class StatsDivision extends BaseWidget
             ];
         });
 
-        $divisionCounts = $divisionData->pluck('count')->toArray();
-
-   
         $mostEmployeesDivision = $divisionData->sortByDesc('count')->first();
         $mostEmployeesDivisionName = $mostEmployeesDivision ? $mostEmployeesDivision['name'] : 'Tidak ada';
         $maxEmployeeCount = $mostEmployeesDivision ? $mostEmployeesDivision['count'] : 0;
@@ -46,12 +43,12 @@ class StatsDivision extends BaseWidget
         return [
             Stat::make('Total Divisi', $totalDivisions)
                 ->description('Jumlah total divisi dalam perusahaan')
-                ->chart($divisionCounts)
+                ->chart([1, 2, 3, 4, 5])
                 ->color('primary'),
 
             Stat::make('Divisi dengan Karyawan Terbanyak', $mostEmployeesDivisionName)
                 ->description("Memiliki $maxEmployeeCount karyawan")
-                ->chart($divisionCounts)
+                ->chart([1, 2, 3, 4, 5])
                 ->color('success'),
         ];
     }

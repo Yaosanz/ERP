@@ -21,11 +21,6 @@ class StatsDepartment extends BaseWidget
             ->orderBy('employees_count', 'desc')
             ->first();
 
-        $departmentCounts = Departement::withCount('employees')
-            ->get()
-            ->pluck('employees_count')
-            ->toArray();
-
         return [
 
             Stat::make('Total Departments', $totalDepartments)
@@ -33,10 +28,10 @@ class StatsDepartment extends BaseWidget
                 ->color('primary')
                 ->chart([1, 2, 3, 4, 5]),
 
-            Stat::make('Most Employees', $mostEmployeesDepartment?->name ?? 'None')
-                ->description($mostEmployeesDepartment ? $mostEmployeesDepartment->employees_count . ' employees' : 'No data')
+            Stat::make('Most Employees', $mostEmployeesDepartment ? $mostEmployeesDepartment->name : 'Tidak ada')
+                ->description('Departemen dengan jumlah karyawan terbanyak')
                 ->color('success')
-                ->chart($departmentCounts), 
+                ->chart([1, 2, 3, 4, 5]),
 
         ];
     }
