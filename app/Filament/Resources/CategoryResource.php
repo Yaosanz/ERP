@@ -68,7 +68,7 @@ class CategoryResource extends Resource
                         ->grouped()
                         ->options([
                             '0' => 'Pemasukan',
-                            '1' => 'Pengeuaran',
+                            '1' => 'Pengeluaran',
                         ])
                         ->icons([
                             '0' => 'heroicon-o-arrow-trending-down',
