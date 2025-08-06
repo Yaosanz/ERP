@@ -41,11 +41,11 @@ class CategoryResource extends Resource
                             'Transportasi' => 'Transportasi',
                             'Jaringan Internet' => 'Jaringan Internet',
                             'Jasa' => 'Jasa',
-                            'Penggandaan Barang' => 'Penggandaan Barang',
-                            'Pemasangan' => 'Pemasangan',
+                            'Pengandaan Barang' => 'Pengandaan Barang',
+                            'Jasa Pemasangan' => 'Jasa Pemasangan',
                             'Penjualan Barang' => 'Penjualan Barang',
                             'Pemeliharaan' => 'Pemeliharaan',
-                            'Pembelian' => 'Pembelian',
+                            'Pembelian Barang' => 'Pembelian Barang',
                             'Pengiriman' => 'Pengiriman',
                             'Gaji' => 'Gaji',
                             'Pembayaran' => 'Pembayaran',
@@ -66,7 +66,7 @@ class CategoryResource extends Resource
                         ->grouped()
                         ->options([
                             '0' => 'Pemasukan',
-                            '1' => 'Pengeuaran',
+                            '1' => 'Pengeluaran',
                         ])
                         ->icons([
                             '0' => 'heroicon-o-arrow-trending-down',
@@ -74,7 +74,7 @@ class CategoryResource extends Resource
                         ])
                         ->colors([
                             '0' => 'success',
-                            '1' => 'warning',
+                            '1' => 'danger',
                         ])
                         ->required(),
                 ])

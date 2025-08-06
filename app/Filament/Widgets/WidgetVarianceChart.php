@@ -27,7 +27,7 @@ class WidgetVarianceChart extends ChartWidget
             return [
                 'datasets' => [
                     [
-                        'label' => 'Variance per Hari',
+                        'label' => 'Keuntungan per Hari',
                         'data' => [],
                         'backgroundColor' => 'rgba(0, 255, 0, 0.2)',  // Green color with transparency
                         'borderColor' => 'rgba(0, 255, 0, 1)',  // Green border
@@ -67,7 +67,6 @@ class WidgetVarianceChart extends ChartWidget
         $startDate = Carbon::parse($this->filters['startDate']);
         $endDate = Carbon::parse($this->filters['endDate']);
 
-        // Mengambil data transaksi dari model Transaction
         $transactions = Transaction::incomes()
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
@@ -79,7 +78,6 @@ class WidgetVarianceChart extends ChartWidget
                 return $item;
             });
 
-        // Mengambil data transaksi dari model TransactionsPayments
         $transactionsIncomes = TransactionPayments::incomes()
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
@@ -91,7 +89,6 @@ class WidgetVarianceChart extends ChartWidget
                 return $item;
             });
 
-        // Mengambil data pengeluaran dari model TransactionsPayments
         $expenses = TransactionPayments::expenses()
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
@@ -103,7 +100,6 @@ class WidgetVarianceChart extends ChartWidget
                 return $item;
             });
 
-        // Mengambil data pengeluaran gaji dari model EmployeePayment
         $salaryExpenses = EmployeePayment::expenses()
             ->whereBetween('payment_date', [$startDate, $endDate])
             ->selectRaw('DATE(payment_date) as date, SUM(amount) as total')
@@ -115,22 +111,18 @@ class WidgetVarianceChart extends ChartWidget
                 return $item;
             });
 
-        // Mendapatkan rentang tanggal
         $dates = $this->getDateRange($startDate, $endDate);
         $labels = $dates->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))->toArray();
 
-        // Mengambil total harian dari masing-masing data
         $incomeData = $this->getDailyTotals($transactions, $dates);
         $transactionsIncomeData = $this->getDailyTotals($transactionsIncomes, $dates);
         $expenseData = $this->getDailyTotals($expenses, $dates);
         $salaryExpenseData = $this->getDailyTotals($salaryExpenses, $dates);
 
-        // Menghitung varians (pemasukan - pengeluaran - pengeluaran gaji) secara kumulatif per hari
         $varianceData = [];
-        $runningTotal = 0; // Untuk menghitung selisih kumulatif per hari
+        $runningTotal = 0; 
 
         foreach ($dates as $index => $date) {
-            // Akumulasi dari pemasukan dan pengeluaran
             $income = $incomeData[$index] ?? 0;
             $transactionIncome = $transactionsIncomeData[$index] ?? 0;
             $expense = $expenseData[$index] ?? 0;

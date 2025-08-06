@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\DB;
 class StatsCategory extends BaseWidget
 {
     protected static bool $isLazy = false;
+
     protected function getColumns(): int
     {
-        return 2; 
+        return 2;
     }
 
     protected function getStats(): array
@@ -29,37 +30,36 @@ class StatsCategory extends BaseWidget
             ->groupBy('category_id')
             ->get();
 
-        $categoryCounts = $categoryCountsTransaction->merge($categoryCountsTransactionPayments);
+        $combinedCounts = $categoryCountsTransaction->merge($categoryCountsTransactionPayments);
 
-        $categoryCountSummed = $categoryCounts->groupBy('category_id')->map(function ($group) {
-            return $group->sum('count');
-        });
+        $categoryCountSummed = $combinedCounts->groupBy('category_id')->map(fn ($group) => $group->sum('count'));
 
-        $mostUsedCategory = $categoryCountSummed->sortDesc()->keys()->first();
-        $maxCount = $categoryCountSummed->sortDesc()->first();
+        $mostUsedCategoryId = $categoryCountSummed->sortDesc()->keys()->first();
+        $maxCount = $categoryCountSummed->sortDesc()->first() ?? 0;
 
-        $mostUsedCategoryName = $mostUsedCategory ? Category::find($mostUsedCategory)->name : 'Tidak ada';
+        $mostUsedCategoryName = $mostUsedCategoryId
+            ? (Category::find($mostUsedCategoryId)?->name ?? 'Tidak diketahui')
+            : 'Tidak ada';
 
-        $categoryData = Category::all()->map(function ($category) use ($categoryCountSummed) {
-            $combinedCount = $categoryCountSummed->get($category->id, 0);
+        $categories = Category::orderBy('name')->get();
 
-            return [
-                'name' => $category->name,
-                'count' => $combinedCount,
-            ];
-        });
+        $categoryCounts = $categories->map(function ($category) use ($categoryCountSummed) {
+            return $categoryCountSummed->get($category->id, 0);
+        })->toArray();
 
-        $categoryCounts = $categoryData->pluck('count')->toArray();
+        $chartData = collect($categoryCounts)->sum() > 0
+            ? $categoryCounts
+            : [5, 4, 3, 2, 1]; 
 
         return [
             Stat::make('Total Kategori Bisnis', $totalBusinessModels)
-                ->description('Jumlah total kategori bisnis yang ada dalam sistem')
-                ->chart($categoryCounts)
-                ->color('warning'),
+                ->description('Total semua kategori bisnis di sistem')
+                ->chart($chartData)
+                ->color('primary'),
 
-            Stat::make('Kategori Bisnis Paling Sering Digunakan', $mostUsedCategoryName)
-                ->description("Digunakan $maxCount kali secara keseluruhan")
-                ->chart($categoryCounts)
+            Stat::make('Kategori Paling Sering Digunakan', $mostUsedCategoryName)
+                ->description("Digunakan sebanyak $maxCount kali")
+                ->chart($chartData)
                 ->color('success'),
         ];
     }

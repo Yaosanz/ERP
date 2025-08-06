@@ -1,0 +1,376 @@
+Enum "employees_gender_enum" {
+  "Male"
+  "Female"
+  "Other"
+}
+
+Enum "vendors_status_enum" {
+  "active"
+  "inactive"
+}
+
+Table "blogs" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "title" varchar(255) [not null]
+  "slug" varchar(255) [unique]
+  "content" text [not null]
+  "thumbnail" varchar(255)
+  "tags" json
+  "published" tinyint(1) [not null, default: 0]
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "cache" {
+  "key" varchar(255) [pk, not null]
+  "value" mediumtext [not null]
+  "expiration" int [not null]
+}
+
+Table "cache_locks" {
+  "key" varchar(255) [pk, not null]
+  "owner" varchar(255) [not null]
+  "expiration" int [not null]
+}
+
+Table "categories" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "is_expense" tinyint(1) [not null, default: 1]
+  "image" varchar(255)
+  "created_at" timestamp
+  "updated_at" timestamp
+  "deleted_at" timestamp
+}
+
+Table "cities" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "province_id" "bigint unsigned" [not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "countries" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "departments" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "description" varchar(255)
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "divisions" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "division_name" varchar(255)
+  "departments_id" "bigint unsigned"
+  "description" varchar(255)
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "employee_payments" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "employee_id" "bigint unsigned" [not null]
+  "amount" int [not null]
+  "payment_date" date [not null]
+  "payment_method" varchar(255) [not null]
+  "status" varchar(255) [not null, default: 'Unpaid']
+  "image" varchar(255)
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "employees" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "email" varchar(255) [unique, not null]
+  "gender" employees_gender_enum [not null]
+  "address" varchar(255)
+  "province_id" "bigint unsigned"
+  "city_id" "bigint unsigned"
+  "country_id" "bigint unsigned"
+  "postal_code" varchar(255)
+  "position" varchar(255)
+  "divisions_id" "bigint unsigned"
+  "salary" int [not null]
+  "hire_date" date
+  "departments_id" "bigint unsigned"
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "exports" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "completed_at" timestamp
+  "file_disk" varchar(255) [not null]
+  "file_name" varchar(255)
+  "exporter" varchar(255) [not null]
+  "processed_rows" "int unsigned" [not null, default: 0]
+  "total_rows" "int unsigned" [not null]
+  "successful_rows" "int unsigned" [not null, default: 0]
+  "user_id" "bigint unsigned" [not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "failed_import_rows" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "data" json [not null]
+  "import_id" "bigint unsigned" [not null]
+  "validation_error" text
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "failed_jobs" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "uuid" varchar(255) [unique, not null]
+  "connection" text [not null]
+  "queue" text [not null]
+  "payload" longtext [not null]
+  "exception" longtext [not null]
+  "failed_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table "imports" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "completed_at" timestamp
+  "file_name" varchar(255) [not null]
+  "file_path" varchar(255) [not null]
+  "importer" varchar(255) [not null]
+  "processed_rows" "int unsigned" [not null, default: 0]
+  "total_rows" "int unsigned" [not null]
+  "successful_rows" "int unsigned" [not null, default: 0]
+  "user_id" "bigint unsigned" [not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "job_batches" {
+  "id" varchar(255) [pk, not null]
+  "name" varchar(255) [not null]
+  "total_jobs" int [not null]
+  "pending_jobs" int [not null]
+  "failed_jobs" int [not null]
+  "failed_job_ids" longtext [not null]
+  "options" mediumtext
+  "cancelled_at" int
+  "created_at" int [not null]
+  "finished_at" int
+}
+
+Table "jobs" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "queue" varchar(255) [not null]
+  "payload" longtext [not null]
+  "attempts" "tinyint unsigned" [not null]
+  "reserved_at" "int unsigned"
+  "available_at" "int unsigned" [not null]
+  "created_at" "int unsigned" [not null]
+
+  Indexes {
+    queue [type: btree, name: "jobs_queue_index"]
+  }
+}
+
+Table "migrations" {
+  "id" "int unsigned" [pk, not null, increment]
+  "migration" varchar(255) [not null]
+  "batch" int [not null]
+}
+
+Table "notifications" {
+  "id" char(36) [pk, not null]
+  "type" varchar(255) [not null]
+  "notifiable_type" varchar(255) [not null]
+  "notifiable_id" "bigint unsigned" [not null]
+  "data" text [not null]
+  "read_at" timestamp
+  "created_at" timestamp
+  "updated_at" timestamp
+
+  Indexes {
+    (notifiable_type, notifiable_id) [type: btree, name: "notifications_notifiable_type_notifiable_id_index"]
+  }
+}
+
+Table "password_reset_tokens" {
+  "email" varchar(255) [pk, not null]
+  "token" varchar(255) [not null]
+  "created_at" timestamp
+}
+
+Table "predictions" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "kategori" varchar(255) [not null]
+  "pemasukan" bigint [not null]
+  "pengeluaran" bigint [not null]
+  "persentase_perubahan" varchar(255) [not null]
+  "prediksi_keuntungan" bigint [not null]
+  "rata_rata_historis_kategori" bigint [not null]
+  "selisih" bigint [not null]
+  "status" varchar(255) [not null]
+  "tanggal_prediksi" date [not null]
+}
+
+Table "products" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "vendor_id" "bigint unsigned"
+  "description" text
+  "price" int
+  "stock" int
+  "image" varchar(255)
+  "unit" varchar(255) [not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "provinces" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "country_id" "bigint unsigned" [not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "sessions" {
+  "id" varchar(255) [pk, not null]
+  "user_id" "bigint unsigned"
+  "ip_address" varchar(45)
+  "user_agent" text
+  "payload" longtext [not null]
+  "last_activity" int [not null]
+
+  Indexes {
+    last_activity [type: btree, name: "sessions_last_activity_index"]
+    user_id [type: btree, name: "sessions_user_id_index"]
+  }
+}
+
+Table "taggables" {
+  "tag_id" "bigint unsigned" [not null]
+  "taggable_type" varchar(255) [not null]
+  "taggable_id" "bigint unsigned" [not null]
+
+  Indexes {
+    (taggable_type, taggable_id) [type: btree, name: "taggables_taggable_type_taggable_id_index"]
+    (tag_id, taggable_id, taggable_type) [unique, name: "taggables_tag_id_taggable_id_taggable_type_unique"]
+  }
+}
+
+Table "tags" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" json [not null]
+  "slug" json [not null]
+  "type" varchar(255)
+  "order_column" int
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "transactions" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "category_id" "bigint unsigned"
+  "product_id" "bigint unsigned"
+  "date_transaction" date [not null]
+  "product_name" varchar(255)
+  "quantity" int
+  "status" varchar(255) [not null, default: 'Unpaid']
+  "amount" int [not null]
+  "description" text
+  "image" varchar(255)
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "transactions_payments" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "category_id" "bigint unsigned"
+  "amount" int [not null]
+  "quantity" int
+  "date_transaction" date [not null]
+  "description" text
+  "status" varchar(255) [not null, default: 'Unpaid']
+  "image" varchar(255)
+  "vehicle_image" varchar(255)
+  "vehicle_plate" varchar(255)
+  "region" varchar(255)
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "users" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "email" varchar(255) [unique, not null]
+  "email_verified_at" timestamp
+  "password" varchar(255) [not null]
+  "remember_token" varchar(100)
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Table "vendors" {
+  "id" "bigint unsigned" [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "address" varchar(255)
+  "number_phone" varchar(255)
+  "email" varchar(255) [unique]
+  "item" varchar(255)
+  "province_id" "bigint unsigned"
+  "city_id" "bigint unsigned"
+  "country_id" "bigint unsigned"
+  "status" vendors_status_enum [not null, default: 'active']
+  "created_at" timestamp
+  "updated_at" timestamp
+}
+
+Ref "cities_province_id_foreign":"provinces"."id" < "cities"."province_id" [delete: cascade]
+
+Ref "divisions_departments_id_foreign":"departments"."id" < "divisions"."departments_id" [delete: cascade]
+
+Ref "employee_payments_employee_id_foreign":"employees"."id" < "employee_payments"."employee_id" [delete: cascade]
+
+Ref "employees_city_id_foreign":"cities"."id" < "employees"."city_id" [delete: cascade]
+
+Ref "employees_country_id_foreign":"countries"."id" < "employees"."country_id" [delete: cascade]
+
+Ref "employees_departments_id_foreign":"departments"."id" < "employees"."departments_id" [delete: cascade]
+
+Ref "employees_divisions_id_foreign":"divisions"."id" < "employees"."divisions_id" [delete: cascade]
+
+Ref "employees_province_id_foreign":"provinces"."id" < "employees"."province_id" [delete: cascade]
+
+Ref "exports_user_id_foreign":"users"."id" < "exports"."user_id" [delete: cascade]
+
+Ref "failed_import_rows_import_id_foreign":"imports"."id" < "failed_import_rows"."import_id" [delete: cascade]
+
+Ref "imports_user_id_foreign":"users"."id" < "imports"."user_id" [delete: cascade]
+
+Ref "products_vendor_id_foreign":"vendors"."id" < "products"."vendor_id" [delete: set null]
+
+Ref "provinces_country_id_foreign":"countries"."id" < "provinces"."country_id" [delete: cascade]
+
+Ref "taggables_tag_id_foreign":"tags"."id" < "taggables"."tag_id" [delete: cascade]
+
+Ref "transactions_category_id_foreign":"categories"."id" < "transactions"."category_id" [delete: cascade]
+
+Ref "transactions_product_id_foreign":"products"."id" < "transactions"."product_id" [delete: cascade]
+
+Ref "transactions_payments_category_id_foreign":"categories"."id" < "transactions_payments"."category_id" [delete: cascade]
+
+Ref "vendors_city_id_foreign":"cities"."id" < "vendors"."city_id" [delete: cascade]
+
+Ref "vendors_country_id_foreign":"countries"."id" < "vendors"."country_id" [delete: cascade]
+
+Ref "vendors_province_id_foreign":"provinces"."id" < "vendors"."province_id" [delete: cascade]

@@ -129,15 +129,14 @@ class Reports extends Report
                         ])
                         ->data(
                             function (?array $filters) {
-                                // Extract date range from filters if available
+                                
                                 [$from, $to] = $this->getCarbonInstancesFromDateString(
                                     $filters['transaction_date'] ?? null
                                 );
                     
-                                // Check if the filter for 'is_expense' is provided
-                                $isExpense = $filters['is_expense'] ?? null; // null means no filter, you can modify this if you need a default value
+                               
+                                $isExpense = $filters['is_expense'] ?? null;
                                 
-                                // Initialize the query
                                 $query = TransactionPayments::query()
                                     ->when($from, function ($query, $date) {
                                         return $query->whereDate('date_transaction', '>=', $date);
@@ -148,16 +147,14 @@ class Reports extends Report
                                     ->with('category') 
                                     ->select('name', 'amount', 'date_transaction');
                     
-                                // Apply expense or income filter if present
                                 if ($isExpense !== null) {
                                     if ($isExpense) {
-                                        $query->expenses(); // Apply the expenses scope
+                                        $query->expenses();
                                     } else {
-                                        $query->incomes(); // Apply the incomes scope
+                                        $query->incomes();
                                     }
                                 }
                     
-                                // Fetch the data and map it to the required structure
                                 return collect($query->get())->map(function ($payment) {
                                     return [
                                         'name' => $payment->name,
@@ -249,18 +246,14 @@ class Reports extends Report
                         })
                         ->sum('amount');
 
-                        // Tambahkan total gaji karyawan sebagai bagian dari pengeluaran
                         $employeePayments = EmployeePayment::where('status', 'Paid')
                         ->whereBetween('payment_date', [$dates[0], $dates[1]])
                         ->sum('amount');
 
-                        // Total pengeluaran adalah jumlah dari transaksi pengeluaran dan gaji karyawan
                         $totalExpenses = $expenses + $employeePayments;
 
-                        // Total pendapatan adalah jumlah dari transaksi pengeluaran dan gaji karyawan
                         $totalIncomes = $otherincomes + $incomes;
 
-                        // Hitung keuntungan
                         $profit = $totalIncomes - $totalExpenses;
 
                         return collect([
@@ -298,20 +291,17 @@ public function footer(Footer $footer): Footer
     private function getCarbonInstancesFromDateString(?string $dateRange): array
 {
     if (!$dateRange) {
-        // If no date range is provided, return the current year start and today's date
         return [
             Carbon::now()->startOfYear(), 
             Carbon::now()->endOfYear(),
         ];
     }
 
-    // If a date range is provided, split it into start and end
     [$start, $end] = explode(' - ', $dateRange);
 
-    // Return the parsed Carbon instances
     return [
-        Carbon::createFromFormat('d/m/Y', trim($start)), 
-        Carbon::createFromFormat('d/m/Y', trim($end))
+        Carbon::createFromFormat('d/m/Y', trim($start))->setTimezone('Asia/Jakarta'), 
+        Carbon::createFromFormat('d/m/Y', trim($end))->setTimezone('Asia/Jakarta'),
     ];
 }
 
