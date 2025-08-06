@@ -15,6 +15,7 @@ class EmployeePayment extends Model
         'payment_date',
         'payment_method',
         'status',
+        'image',
     ];
 
     public function employee()
@@ -25,8 +26,5 @@ class EmployeePayment extends Model
     {
         return $query->where('status', 'paid'); 
     }
-    public function scopeIncomes($query)
-    {
-        return $query->where('status', 'received'); 
-    }
+    
 }

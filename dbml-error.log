@@ -1,0 +1,19 @@
+2025-06-18T04:52:29.186Z
+undefined
+
+2025-06-18T04:52:38.456Z
+undefined
+
+2025-06-18T04:52:53.459Z
+Error: Access denied for user 'user'@'localhost' (using password: YES)
+    at createConnectionPromise (C:\Users\sandy\AppData\Roaming\npm\node_modules\@dbml\cli\node_modules\mysql2\promise.js:19:31)
+    at connectMySQL (C:\Users\sandy\AppData\Roaming\npm\node_modules\@dbml\cli\node_modules\@dbml\connector\dist\connectors\mysqlConnector.js:8:57)
+    at fetchSchemaJson (C:\Users\sandy\AppData\Roaming\npm\node_modules\@dbml\cli\node_modules\@dbml\connector\dist\connectors\mysqlConnector.js:366:26)
+    at Object.fetchSchemaJson (C:\Users\sandy\AppData\Roaming\npm\node_modules\@dbml\cli\node_modules\@dbml\connector\dist\connectors\connector.js:16:57)
+    at connectionHandler (C:\Users\sandy\AppData\Roaming\npm\node_modules\@dbml\cli\lib\cli\connector.js:24:51)
+    at Object.db2dbml (C:\Users\sandy\AppData\Roaming\npm\node_modules\@dbml\cli\lib\cli\index.js:67:26)
+    at Object.<anonymous> (C:\Users\sandy\AppData\Roaming\npm\node_modules\@dbml\cli\bin\db2dbml.js:4:19)
+    at Module._compile (node:internal/modules/cjs/loader:1554:14)
+    at Object..js (node:internal/modules/cjs/loader:1706:10)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+

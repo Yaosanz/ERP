@@ -8,16 +8,26 @@ use Illuminate\Database\Eloquent\Model;
 class Vendor extends Model
 {
     use HasFactory;
-    // protected $table = 'vendors';
+
+
     protected $fillable = [
         'name',
         'address',
         'number_phone',
         'email',
+        'item',
         'province_id',
         'city_id',
         'country_id',
+        'status',
     ];
+
+    
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'vendor_id');
+    }
+
 
     public function country()
     {
@@ -28,7 +38,6 @@ class Vendor extends Model
     {
         return $this->belongsTo(Provinces::class, 'province_id');
     }
-
 
     public function city()
     {

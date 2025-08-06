@@ -14,19 +14,18 @@ class TransactionExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')
-                ->label('ID'),
-            ExportColumn::make('name'),
-            ExportColumn::make('category.name'),
-            ExportColumn::make('product.name'),
-            ExportColumn::make('date_transaction'),
-            ExportColumn::make('product_name'),
-            ExportColumn::make('quantity'),
-            ExportColumn::make('status'),
-            ExportColumn::make('amount'),
-            ExportColumn::make('description'),
-            ExportColumn::make('created_at'),
-            ExportColumn::make('updated_at'),
+            ExportColumn::make('id')->label('No'),
+            ExportColumn::make('name')->label('Nama Transaksi'),
+            ExportColumn::make('category.name')->label('Bisnis Model'),
+            ExportColumn::make('product.name')->label('Nama Produk'),
+            ExportColumn::make('date_transaction')->label('Tanggal Transaksi'),
+            ExportColumn::make('product_name')->label('Nama Produk'),
+            ExportColumn::make('quantity')->label('Jumlah'),
+            ExportColumn::make('status')->label('Status'),
+            ExportColumn::make('amount')->label('Jumlah'),
+            ExportColumn::make('description')->label('Deskripsi'),
+            ExportColumn::make('created_at')->label('Dibuat Pada'),
+            ExportColumn::make('updated_at')->label('Diperbarui Pada'),
         ];
     }
 

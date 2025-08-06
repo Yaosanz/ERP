@@ -32,13 +32,15 @@ class Employee extends Model
     
     public function department()
     {
-        return $this->belongsTo(Departement::class, 'departments_id'); 
+        return $this->belongsTo(Departement::class, 'departments_id');
     }
+    
 
     public function division()
     {
-        return $this->belongsTo(Division::class, 'divisions_id'); 
+    return $this->belongsTo(Division::class, 'divisions_id'); 
     }
+
 
     // Relationship with country
     public function country()

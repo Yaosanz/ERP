@@ -9,7 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditEmployeePayment extends EditRecord
 {
     protected static string $resource = EmployeePaymentResource::class;
-    protected static ?string $title = 'Edit Data Pembayaran Karyawan';
+    protected static ?string $title = 'Edit Transaksi Gaji Karyawan';
     protected function afterSave(): void
     {
         $this->redirect($this->getResource()::getUrl('index'));

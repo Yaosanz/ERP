@@ -4,14 +4,11 @@ namespace App\Filament\Reports;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
-use App\Models\Employee;
+use App\Models\TransactionPayments;
 use EightyNine\Reports\Components\Footer\Layout\FooterRow;
-use EightyNine\Reports\Components\Header\Layout\HeaderColumn;
-use EightyNine\Reports\Components\Header\Layout\HeaderRow;
 use EightyNine\Reports\Components\Image;
 use EightyNine\Reports\Components\Text;
 use EightyNine\Reports\Components\VerticalSpace;
-use EightyNine\Reports\Enums\ImageWidth;
 use EightyNine\Reports\Report;
 use EightyNine\Reports\Components\Body;
 use EightyNine\Reports\Components\Footer;
@@ -60,7 +57,7 @@ class Reports extends Report
         ->schema([
             Body\Layout\BodyColumn::make()
                 ->schema([
-                    Text::make("Rekapitulasi Data Transaksi")
+                    Text::make("Rekapitulasi Penggandaan Barang")
                         ->fontXl()
                         ->fontBold()
                         ->primary(),
@@ -107,26 +104,89 @@ class Reports extends Report
                             }
                         ),
                         VerticalSpace::make(),
+                    Text::make("Rekapitulasi Transaksi General")
+                        ->fontXl()
+                        ->fontBold()
+                        ->primary(),
+                    Text::make("Berikut adalah rekapitulasi data transaksi yang terjadi pada periode " . Carbon::now()->startOfYear()->format('F Y') . " - " . Carbon::now()->format('F Y'))
+                        ->fontSm()
+                        ->secondary(),
+                        Body\Table::make()
+                        ->columns([
+                            Body\TextColumn::make("name")
+                                ->label("Transaksi")
+                                ->alignLeft(),
+                            Body\TextColumn::make("amount")
+                                ->label("Jumlah")
+                                ->alignCenter()
+                                ->formatStateUsing(function ($state) {
+                                    return 'Rp. ' . number_format($state, 0, ',', '.');
+                                }),
+                            Body\TextColumn::make("date_transaction")
+                                ->label("Tanggal")
+                                ->dateTime()
+                                ->alignCenter(),
+                        ])
+                        ->data(
+                            function (?array $filters) {
+                                
+                                [$from, $to] = $this->getCarbonInstancesFromDateString(
+                                    $filters['transaction_date'] ?? null
+                                );
+                    
+                               
+                                $isExpense = $filters['is_expense'] ?? null;
+                                
+                                $query = TransactionPayments::query()
+                                    ->when($from, function ($query, $date) {
+                                        return $query->whereDate('date_transaction', '>=', $date);
+                                    })
+                                    ->when($to, function ($query, $date) {
+                                        return $query->whereDate('date_transaction', '<=', $date);
+                                    })
+                                    ->with('category') 
+                                    ->select('name', 'amount', 'date_transaction');
+                    
+                                if ($isExpense !== null) {
+                                    if ($isExpense) {
+                                        $query->expenses();
+                                    } else {
+                                        $query->incomes();
+                                    }
+                                }
+                    
+                                return collect($query->get())->map(function ($payment) {
+                                    return [
+                                        'name' => $payment->name,
+                                        'quantity' => $payment->quantity,
+                                        'amount' => $payment->amount,
+                                        'date_transaction' => $payment->date_transaction,
+                                    ];
+                                });
+                            }
+                        )
+                    ,
+                        VerticalSpace::make(),
                         Text::make("Rekapitulasi Gaji Karyawan")
                         ->fontXl()
                         ->fontBold()
                         ->primary(),
                         Body\Table::make()
-                ->columns([
-                    Body\TextColumn::make("employee_name")
-                        ->label("Nama Karyawan")
-                        ->alignLeft(),
-                    Body\TextColumn::make("amount")
-                        ->label("Jumlah")
-                        ->numeric()
-                        ->alignCenter()
-                        ->formatStateUsing(function ($state) {
-                            return 'Rp. ' . number_format($state, 0, ',', '.');
-                        }),
-                    Body\TextColumn::make("payment_date")
-                        ->label("Tanggal Pembayaran")
-                        ->dateTime()
-                        ->alignRight(),
+                        ->columns([
+                        Body\TextColumn::make("employee_name")
+                            ->label("Nama Karyawan")
+                            ->alignLeft(),
+                        Body\TextColumn::make("amount")
+                            ->label("Jumlah")
+                            ->numeric()
+                            ->alignCenter()
+                            ->formatStateUsing(function ($state) {
+                                return 'Rp. ' . number_format($state, 0, ',', '.');
+                            }),
+                        Body\TextColumn::make("payment_date")
+                            ->label("Tanggal Pembayaran")
+                            ->dateTime()
+                            ->alignRight(),
                 ])
                 ->data(
                     function (?array $filters) {
@@ -172,27 +232,32 @@ class Reports extends Report
                             $query->where('is_expense', false); 
                         })
                         ->sum('amount');
+                        $otherincomes = TransactionPayments::query()
+                        ->whereBetween('date_transaction', [$dates[0], $dates[1]])
+                        ->whereHas('category', function ($query) {
+                            $query->where('is_expense', false); 
+                        })
+                        ->sum('amount');
 
-                        $expenses = Transaction::query()
+                        $expenses = TransactionPayments::query()
                         ->whereBetween('date_transaction', [$dates[0], $dates[1]])
                         ->whereHas('category', function ($query) {
                             $query->where('is_expense', true); 
                         })
                         ->sum('amount');
 
-                        // Tambahkan total gaji karyawan sebagai bagian dari pengeluaran
-                        $employeePayments = EmployeePayment::query()
+                        $employeePayments = EmployeePayment::where('status', 'Paid')
                         ->whereBetween('payment_date', [$dates[0], $dates[1]])
                         ->sum('amount');
 
-                        // Total pengeluaran adalah jumlah dari transaksi pengeluaran dan gaji karyawan
                         $totalExpenses = $expenses + $employeePayments;
 
-                        // Hitung keuntungan
-                        $profit = $incomes - $totalExpenses;
+                        $totalIncomes = $otherincomes + $incomes;
+
+                        $profit = $totalIncomes - $totalExpenses;
 
                         return collect([
-                        ["item" => "Pendapatan", "total" => "Rp. " . number_format($incomes, 0, ',', '.')], 
+                        ["item" => "Pendapatan", "total" => "Rp. " . number_format($totalIncomes, 0, ',', '.')], 
                         ["item" => "Pengeluaran", "total" => "Rp. " . number_format($totalExpenses, 0, ',', '.')], 
                         ["item" => "Keuntungan", "total" => "Rp. " . number_format($profit, 0, ',', '.')], 
                         ]);
@@ -226,20 +291,17 @@ public function footer(Footer $footer): Footer
     private function getCarbonInstancesFromDateString(?string $dateRange): array
 {
     if (!$dateRange) {
-        // If no date range is provided, return the current year start and today's date
         return [
             Carbon::now()->startOfYear(), 
-            Carbon::now()
+            Carbon::now()->endOfYear(),
         ];
     }
 
-    // If a date range is provided, split it into start and end
     [$start, $end] = explode(' - ', $dateRange);
 
-    // Return the parsed Carbon instances
     return [
-        Carbon::createFromFormat('d/m/Y', trim($start)), 
-        Carbon::createFromFormat('d/m/Y', trim($end))
+        Carbon::createFromFormat('d/m/Y', trim($start))->setTimezone('Asia/Jakarta'), 
+        Carbon::createFromFormat('d/m/Y', trim($end))->setTimezone('Asia/Jakarta'),
     ];
 }
 

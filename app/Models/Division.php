@@ -21,8 +21,9 @@ use Illuminate\Database\Eloquent\Model;
     }
     public function employees()
     {
-        return $this->hasMany(Employee::class);
+    return $this->hasMany(Employee::class, 'divisions_id'); 
     }
+
 
 
 }

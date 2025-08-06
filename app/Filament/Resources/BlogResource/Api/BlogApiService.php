@@ -17,8 +17,7 @@ class BlogApiService extends ApiService
             Handlers\UpdateHandler::class,
             Handlers\DeleteHandler::class,
             Handlers\PaginationHandler::class,
-            Handlers\DetailHandler::class,
-            Handlers\ListHandler::class,
+            Handlers\DetailHandler::class
         ];
 
     }

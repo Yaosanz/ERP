@@ -11,14 +11,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListTransactions extends ListRecords
 {
-    protected static ?string $title = 'Halaman Transaksi';
+    protected static ?string $title = 'Halaman Transaksi Produk';
     protected static string $resource = TransactionResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make()
-            ->label('Tambah Data Transaksi')
+            ->label('Tambah Data')
             ->Icon('heroicon-o-plus-circle'),
         ];
     }
@@ -48,11 +48,6 @@ class ListTransactions extends ListRecords
             'Pending' => Tab::make('Pending')
                 ->modifyQueryUsing(function (Builder $query) {
                     $query->where('status', 'Pending');
-                }),
-
-            'Cancelled' => Tab::make('Cancelled')
-                ->modifyQueryUsing(function (Builder $query) {
-                    $query->where('status', 'Cancelled');
                 }),
         ];
     }

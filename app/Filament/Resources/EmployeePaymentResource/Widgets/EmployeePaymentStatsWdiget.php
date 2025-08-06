@@ -4,6 +4,9 @@ namespace App\Filament\Resources\EmployeePaymentResource\Widgets;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
+use App\Models\TransactionPayments;
+use App\Models\TransactionsExpense;
+use App\Models\TransactionsIncomes;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -17,15 +20,15 @@ class EmployeePaymentStatsWdiget extends BaseWidget
         $income = Transaction::incomes()
             ->where('status', 'Paid')
             ->sum('amount');
-
-        $outcome = Transaction::expenses()
+        
+        $income += TransactionPayments::incomes()
             ->where('status', 'Paid')
             ->sum('amount');
-
+        
         $employeePayments = EmployeePayment::where('status', 'Paid')->sum('amount');
 
        
-        $profit = $income - $outcome - $employeePayments;
+        $profit = $income - $employeePayments;
 
         return [
             Stat::make('Total Pemasukan', 'Rp. ' . number_format($income))
@@ -33,12 +36,6 @@ class EmployeePaymentStatsWdiget extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->chart($this->generateDynamicChart($income, true))
                 ->color($income >= 0 ? 'success' : 'danger'),
-
-            Stat::make('Total Pengeluaran', 'Rp. ' . number_format($outcome))
-                ->description('Penurunan')
-                ->descriptionIcon('heroicon-m-arrow-trending-down')
-                ->chart($this->generateDynamicChart($outcome, false))
-                ->color($outcome >= 0 ? 'danger' : 'success'),
 
             Stat::make('Total Pembayaran Karyawan', 'Rp. ' . number_format($employeePayments))
                 ->description('Pembayaran Karyawan')

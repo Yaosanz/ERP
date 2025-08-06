@@ -4,6 +4,9 @@ namespace App\Filament\Widgets;
 
 use App\Models\Transaction;
 use App\Models\EmployeePayment;
+use App\Models\TransactionPayments;
+use App\Models\TransactionsExpense;
+use App\Models\TransactionsIncomes;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -12,24 +15,24 @@ use Illuminate\Support\Collection;
 class WidgetExpenseChart extends ChartWidget
 {
     use InteractsWithPageFilters;
+
     protected static ?int $sort = 2;
     protected static ?string $heading = 'Pengeluaran';
     protected static bool $isLazy = false;
 
     protected function getData(): array
     {
-        
         if (empty($this->filters['startDate'] ?? null) || empty($this->filters['endDate'] ?? null)) {
             return [
                 'datasets' => [
                     [
                         'label' => 'Pengeluaran per Hari',
                         'data' => [],
-                        'backgroundColor' => 'rgba(255, 99, 132, 0.2)',  
-                        'borderColor' => 'rgba(255, 99, 132, 1)',       
-                        'borderWidth' => 2,  
-                        'tension' => 0.6,    
-                        'fill' => true,    
+                        'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
+                        'borderColor' => 'rgba(255, 99, 132, 1)',
+                        'borderWidth' => 2,
+                        'tension' => 0.6,
+                        'fill' => true,
                     ],
                 ],
                 'labels' => [],
@@ -52,18 +55,16 @@ class WidgetExpenseChart extends ChartWidget
             ];
         }
 
-        
         $startDate = Carbon::parse($this->filters['startDate']);
         $endDate = Carbon::parse($this->filters['endDate']);
 
-    
-        $expenses = Transaction::expenses()
+        // Fetch expenses data from both Transaction and EmployeePayment models
+        $expenses = TransactionPayments::expenses()
             ->whereBetween('date_transaction', [$startDate, $endDate])
             ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
             ->groupBy('date')
             ->orderBy('date')
             ->get();
-
 
         $salaryExpenses = EmployeePayment::expenses()
             ->whereBetween('payment_date', [$startDate, $endDate])
@@ -72,32 +73,31 @@ class WidgetExpenseChart extends ChartWidget
             ->orderBy('date')
             ->get();
 
-        
         $dates = $this->getDateRange($startDate, $endDate);
         $labels = $dates->map(function ($date) {
             return Carbon::parse($date)->format('Y-m-d');
         })->toArray();
 
-        
         $generalExpenseData = $this->getDailyTotals($expenses, $dates);
         $salaryExpenseData = $this->getDailyTotals($salaryExpenses, $dates);
 
+        // Combine both datasets for chart
         return [
             'datasets' => [
                 [
-                    'label' => 'Pengeluaran per Hari',
+                    'label' => 'Transactions (Others)',
                     'data' => $generalExpenseData,
-                    'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
+                    'backgroundColor' => 'rgba(255, 99, 132, 0.2)', 
                     'borderColor' => 'rgba(255, 99, 132, 1)',
                     'borderWidth' => 2,
                     'tension' => 0.6,
                     'fill' => true,
                 ],
                 [
-                    'label' => 'Pengeluaran Gaji Karyawan',
+                    'label' => 'Transactions (Gaji)',
                     'data' => $salaryExpenseData,
-                    'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
-                    'borderColor' => 'rgba(54, 162, 235, 1)',
+                    'backgroundColor' => 'rgba(220, 53, 69, 0.2)', 
+                    'borderColor' => 'rgba(220, 53, 69, 1)',
                     'borderWidth' => 2,
                     'tension' => 0.6,
                     'fill' => true,
@@ -149,6 +149,6 @@ class WidgetExpenseChart extends ChartWidget
      */
     protected function getType(): string
     {
-        return 'line';
+        return 'line'; 
     }
 }

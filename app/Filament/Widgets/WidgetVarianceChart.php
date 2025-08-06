@@ -3,7 +3,10 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Transaction;
+use App\Models\TransactionsIncomes;
+use App\Models\TransactionsExpense;
 use App\Models\EmployeePayment;
+use App\Models\TransactionPayments;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -12,52 +15,141 @@ use Illuminate\Support\Collection;
 class WidgetVarianceChart extends ChartWidget
 {
     use InteractsWithPageFilters;
+
     protected static ?int $sort = 3;
     protected static ?string $heading = 'Selisih Keuntungan';
-    protected static string $color = 'info';
     protected static bool $isLazy = false;
 
     protected function getData(): array
     {
+       
         if (empty($this->filters['startDate']) || empty($this->filters['endDate'])) {
-            return $this->generateEmptyChart();
+            return [
+                'datasets' => [
+                    [
+                        'label' => 'Keuntungan per Hari',
+                        'data' => [],
+                        'backgroundColor' => 'rgba(0, 255, 0, 0.2)',  // Green color with transparency
+                        'borderColor' => 'rgba(0, 255, 0, 1)',  // Green border
+                        'borderWidth' => 2,
+                        'tension' => 0.6,
+                        'fill' => true,
+                    ],
+                ],
+                'labels' => [],
+                'options' => [
+                    'animation' => [
+                        'duration' => 3000,
+                        'easing' => 'easeInOutSine',
+                    ],
+                    'elements' => [
+                        'line' => [
+                            'tension' => 0.6,
+                        ],
+                    ],
+                    'scales' => [
+                        'y' => [
+                            'beginAtZero' => true,
+                            'ticks' => [
+                                'color' => '#4CAF50',  // Green color for Y-axis ticks
+                            ],
+                        ],
+                        'x' => [
+                            'ticks' => [
+                                'color' => '#4CAF50',  // Green color for X-axis ticks
+                            ],
+                        ],
+                    ],
+                ],
+            ];
         }
 
         $startDate = Carbon::parse($this->filters['startDate']);
         $endDate = Carbon::parse($this->filters['endDate']);
 
-        $incomeData = $this->getDailyTotals(Transaction::incomes(), $startDate, $endDate);
-        $expenseData = $this->getDailyTotals(Transaction::expenses(), $startDate, $endDate);
-        $employeePaymentData = $this->getDailyTotals(EmployeePayment::query(), $startDate, $endDate, 'payment_date'); // Ganti dengan 'payment_date'
+        $transactions = Transaction::incomes()
+            ->whereBetween('date_transaction', [$startDate, $endDate])
+            ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                $item->date = Carbon::parse($item->date)->format('Y-m-d');
+                return $item;
+            });
+
+        $transactionsIncomes = TransactionPayments::incomes()
+            ->whereBetween('date_transaction', [$startDate, $endDate])
+            ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                $item->date = Carbon::parse($item->date)->format('Y-m-d');
+                return $item;
+            });
+
+        $expenses = TransactionPayments::expenses()
+            ->whereBetween('date_transaction', [$startDate, $endDate])
+            ->selectRaw('DATE(date_transaction) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                $item->date = Carbon::parse($item->date)->format('Y-m-d');
+                return $item;
+            });
+
+        $salaryExpenses = EmployeePayment::expenses()
+            ->whereBetween('payment_date', [$startDate, $endDate])
+            ->selectRaw('DATE(payment_date) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                $item->date = Carbon::parse($item->date)->format('Y-m-d');
+                return $item;
+            });
 
         $dates = $this->getDateRange($startDate, $endDate);
+        $labels = $dates->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))->toArray();
 
-        // Calculate cumulative variance (income - outcome - employee payments)
-        $cumulativeVariance = 0;
-        $varianceData = $dates->mapWithKeys(function ($date) use ($incomeData, $expenseData, $employeePaymentData, &$cumulativeVariance) {
-            $income = $incomeData[$date] ?? 0;
-            $expense = $expenseData[$date] ?? 0;
-            $employeePayment = $employeePaymentData[$date] ?? 0;
+        $incomeData = $this->getDailyTotals($transactions, $dates);
+        $transactionsIncomeData = $this->getDailyTotals($transactionsIncomes, $dates);
+        $expenseData = $this->getDailyTotals($expenses, $dates);
+        $salaryExpenseData = $this->getDailyTotals($salaryExpenses, $dates);
 
-            $dailyVariance = $income - $expense - $employeePayment;
-            $cumulativeVariance += $dailyVariance;
+        $varianceData = [];
+        $runningTotal = 0; 
 
-            return [$date => $cumulativeVariance];
-        });
+        foreach ($dates as $index => $date) {
+            $income = $incomeData[$index] ?? 0;
+            $transactionIncome = $transactionsIncomeData[$index] ?? 0;
+            $expense = $expenseData[$index] ?? 0;
+            $salaryExpense = $salaryExpenseData[$index] ?? 0;
+            $totalExpense = $expense + $salaryExpense;
+            // Perhitungan varians untuk hari ini
+            $dailyVariance = $income + $transactionIncome - $totalExpense;
+            $runningTotal += $dailyVariance; // Mengakumulasi varians
 
+            // Menyimpan hasil perhitungan varians kumulatif
+            $varianceData[] = $runningTotal;
+        }
+
+        // Menggabungkan semua dataset untuk chart
         return [
             'datasets' => [
                 [
-                    'label' => 'Cumulative Selisih Bersih',
-                    'data' => $varianceData->values()->toArray(),
-                    'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
-                    'borderColor' => 'rgba(75, 192, 192, 1)',
+                    'label' => 'Profits (Keuntungan)',
+                    'data' => $varianceData,
+                    'backgroundColor' => 'rgba(76, 175, 80, 0.2)',
+                    'borderColor' => 'rgba(76, 175, 80, 1)',
                     'borderWidth' => 2,
                     'tension' => 0.6,
                     'fill' => true,
                 ],
             ],
-            'labels' => $dates->toArray(),
+            'labels' => $labels,
             'options' => [
                 'animation' => [
                     'duration' => 3000,
@@ -71,23 +163,21 @@ class WidgetVarianceChart extends ChartWidget
                 'scales' => [
                     'y' => [
                         'beginAtZero' => true,
+                        'ticks' => [
+                            'color' => '#4CAF50',  // Green color for Y-axis ticks
+                        ],
+                    ],
+                    'x' => [
+                        'ticks' => [
+                            'color' => '#4CAF50',  // Green color for X-axis ticks
+                        ],
                     ],
                 ],
             ],
         ];
     }
 
-    protected function getDailyTotals($query, Carbon $startDate, Carbon $endDate, $dateColumn = 'date_transaction'): array
-    {
-        return $query
-            ->whereBetween($dateColumn, [$startDate, $endDate])
-            ->selectRaw("DATE($dateColumn) as date, SUM(amount) as total")
-            ->groupBy('date')
-            ->orderBy('date')
-            ->pluck('total', 'date')
-            ->toArray();
-    }
-
+    // Mendapatkan rentang tanggal antara startDate dan endDate
     protected function getDateRange(Carbon $startDate, Carbon $endDate): Collection
     {
         $dates = collect();
@@ -101,42 +191,20 @@ class WidgetVarianceChart extends ChartWidget
         return $dates;
     }
 
-    protected function generateEmptyChart()
+    // Mengambil total per hari dari data yang diberikan
+    protected function getDailyTotals($modelData, Collection $dates): array
     {
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Cumulative Selisih Pemasukan dan Pengeluaran',
-                    'data' => [],
-                    'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
-                    'borderColor' => 'rgba(75, 192, 192, 1)',
-                    'borderWidth' => 2,
-                    'tension' => 0.6,
-                    'fill' => true,
-                ],
-            ],
-            'labels' => [],
-            'options' => [
-                'animation' => [
-                    'duration' => 3000,
-                    'easing' => 'easeInOutSine',
-                ],
-                'elements' => [
-                    'line' => [
-                        'tension' => 0.6,
-                    ],
-                ],
-                'scales' => [
-                    'y' => [
-                        'beginAtZero' => true,
-                    ],
-                ],
-            ],
-        ];
+        $results = $modelData->pluck('total', 'date')->toArray();
+        return $dates->map(function ($date) use ($results) {
+            return $results[$date] ?? 0;
+        })->toArray();
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function getType(): string
     {
-        return 'line';
+        return 'line'; 
     }
 }

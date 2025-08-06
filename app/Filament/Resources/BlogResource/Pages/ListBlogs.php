@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BlogResource\Pages;
 
 use App\Filament\Resources\BlogResource;
+use App\Filament\Resources\BlogResource\Widgets\StatsBlogs;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
@@ -23,6 +24,8 @@ class ListBlogs extends ListRecords
         ];
     }
 
+    
+
     public function getTabs(): array
     {
         return [
@@ -35,4 +38,11 @@ class ListBlogs extends ListRecords
             }),
         ];
     }
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            StatsBlogs::class,
+        ];
+    }
+
 }

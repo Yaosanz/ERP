@@ -16,11 +16,12 @@ class Departement extends Model
 
     protected $table = 'departments';
 
+   
     public function employees()
     {
-        return $this->hasMany(Employee::class);
+        return $this->hasMany(Employee::class, 'departments_id');
     }
-
+    
     public function divisions()
     {
         return $this->hasMany(Division::class);

@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use EightyNine\Reports\ReportsPlugin;
 use Rupadana\ApiService\ApiServicePlugin;
+use App\Filament\Pages\Prediction;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -44,7 +45,7 @@ class AppPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages')
             , for: 'App\\Filament\\Pages')
             ->pages([
-                
+                Prediction::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

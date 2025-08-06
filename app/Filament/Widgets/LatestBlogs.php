@@ -46,12 +46,13 @@ class LatestBlogs extends BaseWidget
                     ->formatStateUsing(fn ($state) => is_array($state) ? implode(', ', $state) : $state)
                     ->searchable(),
 
-                Tables\Columns\IconColumn::make('published')
+                Tables\Columns\TextColumn::make('published')
                     ->label('Dipublikasikan')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->sortable(),
+                    ->badge(fn ($record) => $record->published ? 'Publish' : 'Unpublish')
+                    ->sortable()
+                    ->searchable()
+                    ->color(fn ($record) => $record->published ? 'success' : 'danger')
+                    ->formatStateUsing(fn ($state) => $state ? 'Publish' : 'Unpublish'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')

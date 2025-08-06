@@ -3,9 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
-use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ToggleButtons;
@@ -16,9 +14,9 @@ use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class CategoryResource extends Resource
 {
@@ -26,7 +24,7 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'carbon-model-alt';
     protected static ?string $navigationGroup = "Model Bisnis";
-    protected static ?string $navigationLabel = 'Kelola Bisnis Model';
+    protected static ?string $navigationLabel = 'Kelola Model Bisnis';
     public static function form(Form $form): Form
 {
     return $form
@@ -43,11 +41,11 @@ class CategoryResource extends Resource
                             'Transportasi' => 'Transportasi',
                             'Jaringan Internet' => 'Jaringan Internet',
                             'Jasa' => 'Jasa',
-                            'Penggandaan Barang' => 'Penggandaan Barang',
-                            'Pemasangan' => 'Pemasangan',
+                            'Pengandaan Barang' => 'Pengandaan Barang',
+                            'Jasa Pemasangan' => 'Jasa Pemasangan',
                             'Penjualan Barang' => 'Penjualan Barang',
                             'Pemeliharaan' => 'Pemeliharaan',
-                            'Pembelian' => 'Pembelian',
+                            'Pembelian Barang' => 'Pembelian Barang',
                             'Pengiriman' => 'Pengiriman',
                             'Gaji' => 'Gaji',
                             'Pembayaran' => 'Pembayaran',
@@ -76,7 +74,7 @@ class CategoryResource extends Resource
                         ])
                         ->colors([
                             '0' => 'success',
-                            '1' => 'warning',
+                            '1' => 'danger',
                         ])
                         ->required(),
                 ])
@@ -140,7 +138,10 @@ class CategoryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('category_id')
+                    ->label('Model Bisnis')
+                    ->options(fn () => Category::pluck('name', 'id'))
+                    ->placeholder('Semua Model Bisnis'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -46,8 +46,8 @@ class EmployeeResource extends Resource
                             ->label('Jenis Kelamin')
                             ->placeholder('Pilih')
                             ->options([
-                                'Male' => 'Male',
-                                'Female' => 'Female',
+                                'Male' => 'Laki-laki',
+                                'Female' => 'Perempuan',
                                 'Other' => 'Other',
                             ])
                             ->required(),
@@ -60,8 +60,7 @@ class EmployeeResource extends Resource
                             ->label('Departemen')
                             ->placeholder('Pilih Departemen')
                             ->options(Departement::all()->pluck('name', 'id')->toArray())
-                            ->reactive()
-                            ->required(),
+                            ->reactive(),
 
                         Forms\Components\Select::make('divisions_id')
                             ->label('Divisi')
@@ -99,13 +98,11 @@ class EmployeeResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('address')
                             ->label('Alamat')
-                            ->placeholder('Alamat Lengkap')
-                            ->required(),
+                            ->placeholder('Alamat Lengkap'),
                         Forms\Components\Select::make('country_id')
                             ->label('Negara')
                             ->relationship('country', 'name')
                             ->placeholder('Pilih Negara')
-                            ->required()
                             ->reactive()
                             ->afterStateUpdated(function (callable $set) {
                                 $set('province_id', null);  
@@ -116,7 +113,6 @@ class EmployeeResource extends Resource
                             ->label('Provinsi')
                             ->relationship('province', 'name')
                             ->placeholder('Pilih Provinsi')
-                            ->required()
                             ->reactive()
                             ->searchable()
                             ->preload()
@@ -137,7 +133,6 @@ class EmployeeResource extends Resource
                             ->label('Kota')
                             ->relationship('city', 'name')
                             ->placeholder('Pilih Kota')
-                            ->required()
                             ->searchable()
                             ->preload()
                             ->options(function (callable $get) {
@@ -153,8 +148,7 @@ class EmployeeResource extends Resource
                         Forms\Components\TextInput::make('postal_code')
                             ->label('Kode Pos')
                             ->placeholder('Kode Pos')
-                            ->numeric()
-                            ->required(),
+                            ->numeric(),
                     ])
                     ->columns(2),
             ]);
@@ -214,6 +208,7 @@ class EmployeeResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

@@ -126,7 +126,7 @@
                 >
                     <x-filament::input
                         x-ref="daterange"
-                        wire:key="{{ $this->id() }}.{{ $statePath }}.{{ $field::class }}.display-text"
+                        wire:key="{{ $name }}.{{ $statePath }}.{{ $field::class }}.display-text"
                         :attributes="\Filament\Support\prepare_inherited_attributes(
                                 $getExtraInputAttributeBag(),
                             )->merge([

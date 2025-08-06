@@ -17,7 +17,7 @@ class DepartemenResource extends Resource
     protected static ?string $navigationIcon = 'clarity-organization-line';
     protected static ?string $navigationGroup = "Manajemen";
     protected static ?string $navigationLabel = 'Kelola Departemen';
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
 {
@@ -44,8 +44,8 @@ class DepartemenResource extends Resource
                                 ->helperText('Jelaskan secara singkat tentang departemen ini terkait tugas dan tanggung jawabnya.')
                                 ->placeholder('Masukkan deskripsi departemen'),
                         ])
-                        ->columnSpan(1) 
-                        ->columns(1),
+                        ->columnSpan(2) 
+                        ->columns(2),
 
                     // Column 2: Divisions Info
                     // Forms\Components\Section::make('Divisi')
@@ -72,22 +72,8 @@ class DepartemenResource extends Resource
                     //     ->columns(1),
                 ]),
         ])
-        ->columns(1); // Specify that the form should use a two-column layout
+        ->columns(2); // Specify that the form should use a two-column layout
 }
-
-    /**
-     * Method to handle post-save actions.
-     */
-    public static function afterSave($record, array $data): void
-    {
-        // Get divisions data from the form
-        $divisions = $data['divisions'] ?? [];
-    
-        // Save divisions if any are provided
-        if (!empty($divisions)) {
-            $record->saveDivisions($divisions);
-        }
-    }
 
     public static function table(Table $table): Table
     {
